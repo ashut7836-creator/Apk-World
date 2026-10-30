@@ -31,7 +31,7 @@
     if (!visible.length) {
       const empty = make('div', 'empty');
       empty.append(make('h3', '', query ? 'No matching uploads' : 'The library is ready for its first upload'));
-      empty.append(make('p', '', query ? 'Try another search or category.' : 'Apps, links and videos added to APK World will appear here.'));
+      empty.append(make('p', '', query ? 'Try another search or category.' : 'Apps, links and videos added to World Mods Official will appear here.'));
       grid.append(empty);
       return;
     }
@@ -106,7 +106,7 @@
       count.textContent = 'Library unavailable';
       grid.replaceChildren();
       const empty = make('div', 'empty');
-      empty.append(make('h3', '', 'APK World is getting ready'));
+      empty.append(make('h3', '', 'World Mods Official is getting ready'));
       empty.append(make('p', '', 'The content library could not be loaded. Please try again later.'));
       grid.append(empty);
     });
