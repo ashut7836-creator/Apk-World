@@ -1,4 +1,6 @@
 (() => {
+  const SUPABASE_URL = 'https://c--05719e7a-a474-4306-8357-699a6212224f-prod.lovable.cloud';
+  const SUPABASE_KEY = 'sb_publishable_pNb7LJp5G4k69yUd2xIZPw_lmjY6mHm';
   const grid = document.getElementById('library-grid');
   const count = document.getElementById('item-count');
   const search = document.getElementById('search');
@@ -13,25 +15,56 @@
     return node;
   };
 
-  function safeLocalFile(path) {
-    if (typeof path !== 'string' || !path.trim() || path.includes('..') || path.startsWith('/') || path.includes('\\')) return null;
-    return new URL(path, window.location.href).href;
+  function httpsUrl(value) {
+    if (typeof value !== 'string' || !value.trim()) return null;
+    try {
+      const parsed = new URL(value);
+      return parsed.protocol === 'https:' ? parsed.href : null;
+    } catch (_) { return null; }
+  }
+
+  function mapRecord(row) {
+    return {
+      type: row.kind, title: row.title, description: row.description || '',
+      version: row.version || '', size: row.file_size || '', date: row.published_at || '',
+      url: row.url || '', file_path: row.file_path || '', thumbnail: row.thumbnail_url || ''
+    };
+  }
+
+  async function makeSignedUrl(path, downloadName) {
+    if (typeof path !== 'string' || !path.trim() || path.startsWith('/') || path.split('/').includes('..') || path.includes('\\')) {
+      throw new Error('Invalid file path.');
+    }
+    const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+    const body = { expiresIn: 3600 };
+    if (downloadName) body.download = downloadName;
+    const response = await fetch(SUPABASE_URL + '/storage/v1/object/sign/downloads/' + encodedPath, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) throw new Error('Could not prepare this file. Please try again.');
+    const result = await response.json();
+    const signed = result.signedURL || result.signedUrl;
+    if (typeof signed !== 'string') throw new Error('The file link was not returned.');
+    if (/^https:\/\//i.test(signed)) return signed;
+    if (signed.startsWith('/storage/v1/')) return SUPABASE_URL + signed;
+    return SUPABASE_URL + '/storage/v1' + (signed.startsWith('/') ? signed : '/' + signed);
   }
 
   function render() {
     const query = search.value.trim().toLowerCase();
-    const visible = items.filter(item => {
-      const type = item.type === 'link' ? 'link' : item.type;
-      return (filter === 'all' || type === filter) &&
-        (String(item.title || '') + ' ' + String(item.description || '')).toLowerCase().includes(query);
-    });
+    const visible = items.filter(item =>
+      (filter === 'all' || item.type === filter) &&
+      (String(item.title || '') + ' ' + String(item.description || '')).toLowerCase().includes(query)
+    );
     count.textContent = visible.length + (visible.length === 1 ? ' item' : ' items');
     grid.replaceChildren();
 
     if (!visible.length) {
       const empty = make('div', 'empty');
       empty.append(make('h3', '', query ? 'No matching uploads' : 'The library is ready for its first upload'));
-      empty.append(make('p', '', query ? 'Try another search or category.' : 'Apps, links and videos added to World Mods Official will appear here.'));
+      empty.append(make('p', '', query ? 'Try another search or category.' : 'Apps, links and videos added by the site owner will appear here.'));
       grid.append(empty);
       return;
     }
@@ -42,40 +75,77 @@
       const isVideo = item.type === 'video';
       const isLink = item.type === 'link';
       top.append(make('div', 'type-icon ' + (isVideo ? 'video' : ''), isVideo ? '▶' : (isLink ? '↗' : '▣')));
-      top.append(make('span', 'tag ' + (isVideo ? 'video' : ''), isVideo ? 'VIDEO' : (isLink ? 'DOWNLOAD LINK' : 'APK')));
-      card.append(top, make('h3', 'card-title', item.title || 'Untitled'), make('p', 'card-desc', item.description || ''));
-      const source = isLink ? (typeof item.url === 'string' && item.url.startsWith('https://') ? item.url : null) : safeLocalFile(item.file);
+      top.append(make('span', 'tag ' + (isVideo ? 'video' : ''), isVideo ? 'VIDEO' : (isLink ? 'LINK' : 'APK')));
+      card.append(top);
 
-      if (isVideo && source) {
-        const player = make('video', 'card-video');
-        player.controls = true;
-        player.preload = 'none';
-        player.playsInline = true;
-        player.src = source;
-        if (item.thumbnail) {
-          const thumbnail = safeLocalFile(item.thumbnail);
-          if (thumbnail) player.poster = thumbnail;
-        }
-        card.append(player);
+      if (httpsUrl(item.thumbnail)) {
+        const image = make('img', 'card-video');
+        image.src = httpsUrl(item.thumbnail);
+        image.alt = '';
+        image.loading = 'lazy';
+        card.append(image);
       }
+
+      card.append(make('h3', 'card-title', item.title || 'Untitled'));
+      card.append(make('p', 'card-desc', item.description || ''));
 
       const meta = make('div', 'card-meta');
       const details = [];
       if (item.version) details.push('Version ' + item.version);
       if (item.size) details.push(String(item.size));
-      if (item.date) details.push(String(item.date));
+      if (item.date) {
+        const parsedDate = new Date(item.date + 'T00:00:00');
+        if (!Number.isNaN(parsedDate.getTime())) details.push(parsedDate.toLocaleDateString());
+      }
       meta.append(make('span', '', details.join(' · ') || (isVideo ? 'VIDEO' : 'ANDROID')));
       card.append(meta);
 
-      if (!isVideo && source) {
-        const link = make('a', 'card-action', isLink ? 'Open link ↗' : 'Download APK ↓');
-        link.href = source;
+      if (isLink && httpsUrl(item.url)) {
+        const link = make('a', 'card-action', 'Open link ↗');
+        link.href = httpsUrl(item.url);
+        link.target = '_blank';
         link.rel = 'noopener noreferrer';
-        if (isLink) link.target = '_blank';
-        else link.setAttribute('download', '');
         card.append(link);
-      } else if (isVideo && !source) {
-        card.append(make('p', 'hint', 'Video file not available.'));
+      } else if (item.file_path && (item.type === 'app' || isVideo)) {
+        const button = make('button', 'card-action', isVideo ? 'Play video ▶' : 'Download APK ↓');
+        button.type = 'button';
+        button.addEventListener('click', async () => {
+          button.disabled = true;
+          button.textContent = 'Preparing…';
+          try {
+            const filename = item.file_path.split('/').pop();
+            const url = await makeSignedUrl(item.file_path, item.type === 'app' ? filename : null);
+            if (isVideo) {
+              const player = make('video', 'card-video');
+              player.controls = true;
+              player.playsInline = true;
+              player.preload = 'metadata';
+              player.src = url;
+              const previous = card.querySelector('video.card-video');
+              if (previous) previous.remove();
+              card.insertBefore(player, card.querySelector('.card-title'));
+              player.play().catch(() => {});
+              button.textContent = 'Video ready';
+            } else {
+              window.location.assign(url);
+              button.textContent = 'Opening download…';
+            }
+          } catch (error) {
+            button.textContent = 'Try again';
+            alert(error && error.message ? error.message : 'Could not open this file.');
+          } finally {
+            button.disabled = false;
+          }
+        });
+        card.append(button);
+      } else if (httpsUrl(item.url)) {
+        const link = make('a', 'card-action', isVideo ? 'Watch video ↗' : 'Open link ↗');
+        link.href = httpsUrl(item.url);
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        card.append(link);
+      } else {
+        card.append(make('p', 'hint', 'File or link not available.'));
       }
       grid.append(card);
     });
@@ -91,23 +161,40 @@
   });
   search.addEventListener('input', render);
 
-  fetch('media.json', { cache: 'no-store' })
-    .then(response => {
-      if (!response.ok) throw new Error('Could not load the library.');
-      return response.json();
-    })
-    .then(data => {
-      if (!Array.isArray(data)) throw new Error('The library file has an invalid format.');
-      items = data.filter(item => item && ['app', 'video', 'link'].includes(item.type) && typeof item.title === 'string');
-      render();
-    })
-    .catch(error => {
-      console.error(error);
-      count.textContent = 'Library unavailable';
-      grid.replaceChildren();
-      const empty = make('div', 'empty');
-      empty.append(make('h3', '', 'World Mods Official is getting ready'));
-      empty.append(make('p', '', 'The content library could not be loaded. Please try again later.'));
-      grid.append(empty);
+  async function loadCatalogue() {
+    const endpoint = SUPABASE_URL + '/rest/v1/catalogue_items?select=*&order=published_at.desc,created_at.desc';
+    const response = await fetch(endpoint, {
+      headers: { apikey: SUPABASE_KEY, Accept: 'application/json' },
+      cache: 'no-store'
     });
+    if (!response.ok) throw new Error('Could not load the live catalogue.');
+    const data = await response.json();
+    if (!Array.isArray(data)) throw new Error('The live catalogue returned an invalid response.');
+    return data.filter(row => row && ['app', 'video', 'link'].includes(row.kind) && typeof row.title === 'string').map(mapRecord);
+  }
+
+  loadCatalogue().then(data => {
+    items = data;
+    render();
+  }).catch(error => {
+    console.error(error);
+    fetch('media.json', { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error('Fallback library is unavailable.');
+        return response.json();
+      })
+      .then(data => {
+        items = Array.isArray(data) ? data.filter(item => item && ['app', 'video', 'link'].includes(item.type) && typeof item.title === 'string') : [];
+        render();
+        grid.prepend(make('p', 'hint', 'Showing the saved fallback list because the live catalogue could not be reached.'));
+      })
+      .catch(() => {
+        count.textContent = 'Library unavailable';
+        grid.replaceChildren();
+        const empty = make('div', 'empty');
+        empty.append(make('h3', '', 'World Mods Official is temporarily unavailable'));
+        empty.append(make('p', '', 'Please refresh the page later.'));
+        grid.append(empty);
+      });
+  });
 })();
