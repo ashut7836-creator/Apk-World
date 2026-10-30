@@ -470,7 +470,7 @@ export default {
       if (request.method === "POST" && url.pathname === "/api/upload/finish") return await finishUpload(request, env);
       if (request.method === "POST" && url.pathname === "/api/items") return await createLink(request, env);
       if (request.method === "GET" && url.pathname === "/api/admin/items") return await adminItems(request, env);
-      const permanentMatch = url.pathname.match(/^\\/api\\/items\\/([0-9a-f-]{36})\\/permanent-delete$/i);
+      const permanentMatch = url.pathname.match(/^\/api\/items\/([0-9a-f-]{36})\/permanent-delete$/i);
       if (permanentMatch && request.method === "POST") return await permanentlyDeleteItem(request, env, permanentMatch[1]);
       const itemMatch = url.pathname.match(/^\/api\/items\/([0-9a-f-]{36})$/i);
       if (itemMatch && request.method === "DELETE") return await deleteItem(request, env, itemMatch[1]);
