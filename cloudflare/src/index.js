@@ -280,7 +280,7 @@ async function startUpload(request, env) {
 function validDriveSession(value) {
   try {
     const u = new URL(value);
-    return u.protocol === "https:" && u.hostname === "www.googleapis.com" && u.pathname.startsWith("/upload/drive/v3/files/");
+    return u.protocol === "https:" && u.hostname === "www.googleapis.com" && (u.pathname === "/upload/drive/v3/files" || u.pathname.startsWith("/upload/drive/v3/files/"));
   } catch { return false; }
 }
 async function proxyUploadChunk(request) {
