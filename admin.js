@@ -1,5 +1,5 @@
 (() => {
-  const API = "https://world-mods-official-api.ashut7836.workers.dev";
+  const API = location.origin;
   const TOKEN_KEY = "wm_official_admin_session";
   const $ = (s, root=document) => root.querySelector(s);
   const root = $("#admin-app");
