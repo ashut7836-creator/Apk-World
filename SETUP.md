@@ -1,31 +1,20 @@
-# APK World setup
+# APK World — content management
 
-The public website is hosted on GitHub Pages. Supabase provides secure owner login, database records and storage for APK and video files.
+The public website is hosted with GitHub Pages. There is intentionally no public admin dashboard.
 
-## 1. Configure Supabase
-1. Create a Supabase project.
-2. In Project Settings → API, copy the Project URL and publishable key (or legacy anon key).
-3. Replace the two placeholder values in config.js with those values.
-4. Open the Supabase SQL Editor and run the complete setup.sql file once.
-5. In Supabase Authentication → Users, create your owner account with a strong, unique password. Keep public sign-ups disabled.
-6. Run this SQL after replacing the email with the exact owner email:
+## How new uploads are managed
+Send the APK, video, or download URL to the APK World website manager in the chat. Include the display name and a short description. The website manager can then add the supported files to this GitHub repository and update `media.json`, subject to file-size and hosting limits.
 
-    insert into public.admin_users (user_id)
-    select id from auth.users where email = 'YOUR-ADMIN-EMAIL'
-    on conflict (user_id) do nothing;
+## Repository layout
+- `index.html`, `styles.css`, `app.js`: public website
+- `media.json`: catalogue shown on the website
+- `downloads/`: APK files
+- `videos/`: small MP4/WebM video files
 
-Never put a service_role key, database password or other private credential in this public repository. The publishable/anon key is designed to be public; row-level security policies in setup.sql protect admin actions.
+Large video files are better hosted on a video or file-storage service and linked from the catalogue. GitHub Pages is static website hosting, not an unlimited media server.
 
-## 2. Enable GitHub Pages
-1. Open this repository on GitHub.
-2. Go to Settings → Pages.
-3. Under Build and deployment, choose Deploy from a branch.
-4. Select branch main and folder /(root), then Save.
-5. GitHub will show the public website address after deployment.
+## Publishing
+GitHub repository → Settings → Pages → Deploy from a branch → `main` → `/(root)`.
 
-## 3. Upload content
-1. Open the public website address.
-2. Go to /admin.html and sign in with your owner account.
-3. Publish an APK file, direct HTTPS APK link, or MP4/WebM video.
-
-The starter dashboard limits each upload to 50 MB. Check your Supabase plan limits before uploading larger files. APKs and videos are stored in Supabase, not in the GitHub repository. Only share apps and videos you created or have permission to share. Published files are public. APK World does not scan or certify APK files.
+## Safety
+Only publish content you created or have permission to distribute. Do not upload copyrighted apps/videos without permission, modified apps presented as official, or files you have not checked. Published content is public. Never add passwords, personal access tokens, or service-role keys to the repository.
