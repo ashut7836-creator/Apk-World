@@ -229,7 +229,7 @@ async function googleScopeInfo(request, env) {
   const check = await fetch("https://oauth2.googleapis.com/tokeninfo?access_token=" + encodeURIComponent(accessToken));
   const info = await check.json().catch(() => ({}));
   if (!check.ok) return response(request, { error: "Google could not inspect the current access token. Reconnect Google Drive and try again." }, 502);
-  const scopes = String(info.scope || "").split(/\\s+/).filter(Boolean);
+  const scopes = String(info.scope || "").split(/\s+/).filter(Boolean);
   return response(request, {
     hasDriveFileScope: scopes.includes(DRIVE_SCOPE),
     scopes: scopes.filter(scope => scope.startsWith("https://www.googleapis.com/auth/drive") || scope === "openid" || scope === "email" || scope === "profile")
