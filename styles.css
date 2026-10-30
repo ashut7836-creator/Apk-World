@@ -3,3 +3,25 @@
 @media(max-width:760px){.hero{grid-template-columns:1fr;padding-top:48px}.hero-art{height:260px;max-width:470px;width:100%;margin:auto}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section-head{align-items:flex-start;gap:12px}.about{margin-bottom:38px}footer{flex-wrap:wrap}.admin-wrap{margin:22px auto}}
 @media(max-width:500px){.topbar{height:67px;padding:0 17px}.topbar nav{gap:12px;font-size:11px}.nav-button{padding:8px 10px}main{padding:0 17px}.hero{padding:42px 0 28px}h1{font-size:51px}.hero-copy{font-size:14px}.hero-art{height:230px}.ring-one{width:255px}.ring-two{width:310px}.app-card{transform:scale(.86) rotate(-7deg)}.tag-app{left:3%;top:20px}.tag-video{right:0;top:74px}.tag-link{left:12%;bottom:15px}.library{padding:33px 0 48px}.section-head h2{font-size:25px}.section-head .muted{font-size:11px}.count{font-size:9px;padding:7px 8px}.toolbar{align-items:stretch;flex-direction:column}.search{max-width:none}.filters{align-self:flex-start}.grid{grid-template-columns:1fr}.about{padding:19px;gap:13px}.about h2{font-size:19px}footer{padding:19px 17px;justify-content:flex-start}footer>span:nth-child(2){order:3;width:100%}.panel{padding:18px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.admin-head{align-items:flex-start}}
 .brand-avatar{width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid #6ee7ff88;box-shadow:0 0 18px #12c8ff44}.hero-logo{width:min(260px,72%);aspect-ratio:1;object-fit:cover;border-radius:50%;border:2px solid #6ee7ff99;box-shadow:0 0 55px #00bfff55;z-index:2}.hero-art .ring{opacity:.35}@media(max-width:500px){.brand-avatar{width:36px;height:36px}.brand{font-size:14px;gap:8px}.hero-logo{width:190px}}
+
+
+/* Featured Telegram community banner */
+.telegram-feature{position:relative;isolation:isolate;overflow:hidden;margin:0 0 46px;border:1px solid #69e5d04a;border-radius:22px;background:linear-gradient(112deg,#12243a 0%,#182b49 48%,#24204a 100%);box-shadow:0 20px 55px #0004}
+.telegram-motion{display:flex;align-items:center;gap:25px;white-space:nowrap;overflow:hidden;padding:10px 0;border-bottom:1px solid #ffffff16;background:#69e5d00c;color:#a9eee2;font-size:9px;font-weight:800;letter-spacing:2.2px}
+.telegram-motion span{flex:none;animation:telegram-travel 20s linear infinite}
+.telegram-motion span:nth-child(even){color:#b7aaff}
+@keyframes telegram-travel{from{transform:translateX(0)}to{transform:translateX(-180px)}}
+.telegram-content{position:relative;z-index:2;display:flex;align-items:center;gap:20px;padding:27px 30px}
+.telegram-icon{width:62px;height:62px;flex:none;display:grid;place-items:center;border-radius:19px;background:linear-gradient(145deg,#43d5e8,#278acb);box-shadow:0 9px 30px #25a9d966}
+.telegram-icon svg{width:33px;height:33px;fill:#fff}
+.telegram-copy{min-width:0;flex:1}
+.telegram-kicker{display:block;margin-bottom:7px;color:#83e8dc;font-size:9px;font-weight:800;letter-spacing:2px}
+.telegram-copy h2{margin:0 0 6px;font:700 clamp(18px,2.6vw,27px)/1.1 'Space Grotesk';letter-spacing:-.7px}
+.telegram-copy h2 strong{color:#83e8dc}
+.telegram-copy p{margin:0;color:#b1bfd8;font-size:12px;line-height:1.6}
+.telegram-join{display:inline-flex;align-items:center;justify-content:center;gap:15px;flex:none;padding:14px 19px;border:1px solid #8cefe3;border-radius:12px;background:linear-gradient(110deg,#69e5d0,#65bce9);color:#071725;font-size:12px;font-weight:800;box-shadow:0 7px 24px #39c9c044;transition:transform .2s ease,box-shadow .2s ease}
+.telegram-join:hover{transform:translateY(-3px);box-shadow:0 12px 30px #39c9c066}
+.telegram-shine{position:absolute;z-index:1;pointer-events:none;width:260px;height:260px;right:18%;top:-180px;border-radius:50%;background:#69e5d0;filter:blur(90px);opacity:.15;animation:telegram-glow 5s ease-in-out infinite alternate}
+@keyframes telegram-glow{from{opacity:.09;transform:translateX(-30px)}to{opacity:.22;transform:translateX(35px)}}
+@media(max-width:650px){.telegram-feature{margin-bottom:35px;border-radius:17px}.telegram-content{padding:21px 17px;gap:13px;flex-wrap:wrap}.telegram-icon{width:49px;height:49px;border-radius:15px}.telegram-icon svg{width:27px;height:27px}.telegram-copy{flex:1 1 calc(100% - 65px)}.telegram-copy h2{font-size:19px}.telegram-copy p{font-size:11px}.telegram-join{width:100%;margin-top:3px;padding:13px}.telegram-motion{font-size:8px;letter-spacing:1.7px}}
+@media(prefers-reduced-motion:reduce){.telegram-motion span,.telegram-shine{animation:none}.telegram-join{transition:none}}
