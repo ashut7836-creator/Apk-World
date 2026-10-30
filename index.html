@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1020"><meta name="description" content="APK World — apps, APK links and videos in one place.">
+<title>APK World — Apps & Videos</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="glow glow-a"></div><div class="glow glow-b"></div>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-icon">A</span><span>APK <b>WORLD</b></span></a><nav><a href="#library">Explore</a><a href="#about">About</a><a class="nav-button" href="admin.html">Admin ↗</a></nav></header>
+<main>
+<section class="hero"><div><div class="eyebrow"><span class="dot"></span> YOUR DIGITAL DOWNLOAD HUB</div><h1>Discover.<br>Download.<br><span>Enjoy.</span></h1><p class="hero-copy">Apps, APK links and videos — all organised in one simple place.</p><a class="primary-button" href="#library">Explore library <span>↓</span></a></div>
+<div class="hero-art" aria-hidden="true"><div class="ring ring-one"></div><div class="ring ring-two"></div><div class="app-card"><div class="app-mark">AW</div><div class="mini-lines"><i></i><i></i><i></i></div><small>APK WORLD</small></div><div class="float-tag tag-app">▣ APPS</div><div class="float-tag tag-video">▶ VIDEOS</div><div class="float-tag tag-link">↗ LINKS</div></div></section>
+<section id="library" class="library"><div class="section-head"><div><div class="eyebrow">THE LIBRARY</div><h2>Explore the collection</h2><p class="muted">Find something useful or check out the latest uploads.</p></div><span id="item-count" class="count">Loading…</span></div>
+<div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search apps and videos…" autocomplete="off"></label><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="app">Apps</button><button class="filter" data-filter="video">Videos</button></div></div>
+<div id="library-grid" class="grid"><div class="empty"><h3>Loading APK World…</h3><p>Getting the latest uploads.</p></div></div><p id="setup-note" class="setup-note hidden">The owner still needs to connect the database. See SETUP.md in the repository.</p></section>
+<section id="about" class="about"><span class="about-symbol">✦</span><div><div class="eyebrow">A NOTE FROM APK WORLD</div><h2>One home for your digital finds.</h2><p class="muted">A small public library for apps, download links and videos. Content is added by the site owner.</p></div></section>
+</main>
+<footer><a class="brand" href="index.html"><span class="brand-icon">A</span><span>APK <b>WORLD</b></span></a><span>Made for sharing useful digital content.</span><span>© <span id="year"></span> APK World</span></footer>
+<div class="safety">Safety note: only download APKs from sources you trust. APK World does not certify third-party files.</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="app.js"></script>
+</body></html>
