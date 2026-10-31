@@ -1,19 +1,20 @@
 const fs = require("node:fs");
+const vm = require("node:vm");
 const src = fs.readFileSync("cloudflare/src/index.js", "utf8");
-function scan(name, marker, quote) {
-  const m = src.indexOf(marker);
-  if (m < 0) throw new Error("Missing " + name);
-  const start = m + marker.length;
-  let escaped = false;
-  for (let i = start; i < src.length; i++) {
-    const ch = src[i];
-    if (escaped) { escaped = false; continue; }
-    if (ch.charCodeAt(0) === 92) { escaped = true; continue; }
-    if (ch === quote) {
-      console.log(name + " closing quote at " + i + " next=" + JSON.stringify(src.slice(i + 1, i + 35)) + " context=" + JSON.stringify(src.slice(i - 70, i + 70)));
-      return;
-    }
-  }
-  console.log(name + " no closing quote found");
+const marker = 'const ADMIN_PAGE_HTML = "';
+const m = src.indexOf(marker);
+const start = m + marker.length - 1;
+let escaped = false, end = -1;
+for (let i = start + 1; i < src.length; i++) {
+  const ch = src[i];
+  if (escaped) { escaped = false; continue; }
+  if (ch.charCodeAt(0) === 92) { escaped = true; continue; }
+  if (ch === '"') { end = i; break; }
 }
-scan("ADMIN_PAGE_HTML", 'const ADMIN_PAGE_HTML = "', '"');
+console.log("ADMIN_PAGE_HTML raw string bounds:", start, end, "following:", JSON.stringify(src.slice(end+1,end+20)));
+const literal = src.slice(start, end + 1);
+try { new vm.Script("const test = " + literal + ";"); console.log("HTML string literal parses OK"); }
+catch (e) { console.log("HTML string parse error:", e.stack); }
+const without = src.slice(0,start) + '""' + src.slice(end+1);
+try { new vm.Script(without); console.log("Worker parses when ADMIN_PAGE_HTML is blank"); }
+catch (e) { console.log("Worker parse error with blank HTML:", e.stack); }
