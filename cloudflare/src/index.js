@@ -263,7 +263,7 @@ async function handleSetPassword(request, env, admin) {
 }
 async function handleCatalogue(request, env) {
   const { results } = await env.DB.prepare(
-    "SELECT c.id,c.kind,c.title,c.description,c.version,c.file_size,c.url,c.drive_file_id,c.mime_type,c.thumbnail_url,c.published_at,c.created_at,c.sha256,COALESCE(s.downloads,0) AS download_count FROM catalogue_items c LEFT JOIN catalogue_stats s ON s.drive_file_id=c.drive_file_id WHERE c.is_published=1 ORDER BY c.published_at DESC,c.created_at DESC"
+    "SELECT c.id,c.kind,c.title,c.description,c.version,c.file_size,c.url,c.drive_file_id,c.mime_type,c.thumbnail_url,c.published_at,c.created_at,c.sha256,c.category,c.android_requirement,COALESCE(s.downloads,0) AS download_count FROM catalogue_items c LEFT JOIN catalogue_stats s ON s.drive_file_id=c.drive_file_id WHERE c.is_published=1 ORDER BY c.published_at DESC,c.created_at DESC"
   ).all();
   return response(request, results || []);
 }
@@ -355,7 +355,7 @@ async function finishUpload(request, env) {
   const published = String(body?.published_at || new Date().toISOString().slice(0, 10));
   const description = String(body?.description || "").slice(0, 1000);
   await env.DB.prepare(
-    "INSERT INTO catalogue_items (id,kind,title,description,version,file_size,drive_file_id,drive_view_url,mime_type,published_at,is_published,created_at,updated_at,sha256) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?,?)"
+    "INSERT INTO catalogue_items (id,kind,title,description,version,file_size,drive_file_id,drive_view_url,mime_type,published_at,is_published,created_at,updated_at,sha256,category,android_requirement) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?,?,?,?)"
   ).bind(id, kind, title, description, String(body?.version || "").slice(0, 40) || null, Number(file.size || body?.size || 0), fileId, file.webViewLink || null, file.mimeType || null, published, now, now, /^[a-f0-9]{64}$/i.test(String(body?.sha256 || "")) ? String(body.sha256).toLowerCase() : null).run();
   await communityNotify(env, "New upload: " + title, "A new " + kind + " was added to the World Mods Official library.", "/Apk-World/#library");
   return response(request, { ok: true, id, file_id: fileId, title });
@@ -367,8 +367,8 @@ async function createLink(request, env) {
   if (!title || title.length > 120 || !validHttps(url)) return response(request, { error: "Add a title and a valid HTTPS link." }, 400);
   const now = Math.floor(Date.now() / 1000);
   const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO catalogue_items (id,kind,title,description,url,published_at,is_published,created_at,updated_at) VALUES (?,'link',?,?,?,?,1,?,?)")
-    .bind(id, title, String(body?.description || "").slice(0,1000), url, String(body?.published_at || new Date().toISOString().slice(0,10)), now, now).run();
+  await env.DB.prepare("INSERT INTO catalogue_items (id,kind,title,description,url,published_at,is_published,created_at,updated_at,category,android_requirement) VALUES (?,'link',?,?,?,?,1,?,?,?,?)")
+    .bind(id, title, String(body?.description || "").slice(0,1000), url, String(body?.published_at || new Date().toISOString().slice(0,10)), now, now, String(body?.category || "").trim().slice(0,40) || null, String(body?.android_requirement || "").trim().slice(0,40) || null).run();
   await communityNotify(env, "New upload: " + title, "A new link was added to the World Mods Official library.", "/Apk-World/#library");
   return response(request, { ok: true, id });
 }
@@ -406,8 +406,8 @@ async function updateItem(request, env, id) {
   const body = await readJson(request);
   const title = String(body?.title || "").trim();
   if (!title || title.length > 120) return response(request, { error: "Title is required." }, 400);
-  await env.DB.prepare("UPDATE catalogue_items SET title=?,description=?,version=?,is_published=?,updated_at=? WHERE id=?")
-    .bind(title, String(body?.description || "").slice(0,1000), String(body?.version || "").slice(0,40) || null, body?.is_published === false ? 0 : 1, Math.floor(Date.now()/1000), id).run();
+  await env.DB.prepare("UPDATE catalogue_items SET title=?,description=?,version=?,category=?,android_requirement=?,is_published=?,updated_at=? WHERE id=?")
+    .bind(title, String(body?.description || "").slice(0,1000), String(body?.version || "").slice(0,40) || null, String(body?.category || "").trim().slice(0,40) || null, String(body?.android_requirement || "").trim().slice(0,40) || null, body?.is_published === false ? 0 : 1, Math.floor(Date.now()/1000), id).run();
   return response(request, { ok: true });
 }
 
