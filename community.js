@@ -52,6 +52,9 @@
         const category=/shoutout|announcement/i.test(title)?"shoutouts":/^new upload:/i.test(title)?"apps":"updates";
         return prefs[category]!==false;
       });
+      const unreadCount=notifications.filter(n=>!n.is_read).length;
+      const badge=$("#notification-count");
+      if(badge)badge.hidden=unreadCount===0;
       if(!notifications.length){target.textContent="No updates yet. Your notification preferences are applied.";target.className="community-muted";return;}
       notifications.forEach(n=>{const row=document.createElement("div");row.className="notice-row";const title=document.createElement("strong");title.textContent=n.title;const body=document.createElement("p");body.textContent=n.body;const time=document.createElement("small");time.textContent=fmtDate(n.created_at);row.append(title,body,time);if(n.link){const a=document.createElement("a");a.href=n.link;a.textContent="Open ↗";a.className="community-muted";row.append(a);}if(!n.is_read){row.style.borderLeft="2px solid #69e5d0";row.style.paddingLeft="9px";}row.addEventListener("click",()=>{if(!n.is_read)api("/api/community/notifications/"+encodeURIComponent(n.id)+"/read",{method:"POST"}).catch(()=>{});});target.append(row);});
     }catch(e){target.textContent=e.message;}
