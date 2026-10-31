@@ -12,6 +12,35 @@ permissions:
   contents: read
 
 jobs:
+  android-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Compile app and validate package metadata
+        run: |
+          set -euo pipefail
+          gradle -p android :app:assembleDebug --no-daemon --stacktrace
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          aapt dump badging "$APK" | grep -E "^package: name='com.worldmodsofficial.app' versionCode='3' versionName='1.2.0'"
+      - name: Upload compile-check APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorldMod-Official-Compile-Check
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
   signed-build:
     runs-on: ubuntu-latest
     steps:
@@ -35,14 +64,29 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
-          if [ -z "${ANDROID_SIGNING_KEY_B64:-}" ] || [ -z "${ANDROID_KEYSTORE_PASSWORD:-}" ]; then
-            echo "::error::Missing repository secrets. Add ANDROID_SIGNING_KEY_BASE64 (or ANDROID_SIGNING_KEY) and ANDROID_KEYSTORE_PASSWORD."
+          if [ -z "${ANDROID_SIGNING_KEY_B64:-}" ]; then
+            echo "::error::The repository secret ANDROID_SIGNING_KEY_BASE64 (or legacy ANDROID_SIGNING_KEY) is missing or empty."
             exit 1
           fi
+          if [ -z "${ANDROID_KEYSTORE_PASSWORD:-}" ]; then
+            echo "::error::The repository secret ANDROID_KEYSTORE_PASSWORD is missing or empty."
+            exit 1
+          fi
+          SIGNING_KEY_CLEAN="$(printf '%s' "$ANDROID_SIGNING_KEY_B64" | tr -d '[:space:]')"
           mkdir -p android/app/build/secure
-          printf '%s' "$ANDROID_SIGNING_KEY_B64" | base64 --decode > android/app/build/secure/worldmod-official-release.p12
+          if ! printf '%s' "$SIGNING_KEY_CLEAN" | base64 --decode > android/app/build/secure/worldmod-official-release.p12; then
+            echo "::error::ANDROID_SIGNING_KEY_BASE64 is not valid Base64. Copy the complete contents of ANDROID_SIGNING_KEY.txt."
+            exit 1
+          fi
           chmod 600 android/app/build/secure/worldmod-official-release.p12
-          keytool -list -keystore android/app/build/secure/worldmod-official-release.p12 -storetype PKCS12 -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias worldmod-release >/dev/null
+          if ! keytool -list -keystore android/app/build/secure/worldmod-official-release.p12 -storetype PKCS12 -storepass "$ANDROID_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
+            echo "::error::The keystore could not be opened. Check that ANDROID_KEYSTORE_PASSWORD matches the supplied keystore."
+            exit 1
+          fi
+          if ! keytool -list -keystore android/app/build/secure/worldmod-official-release.p12 -storetype PKCS12 -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias worldmod-release >/dev/null 2>&1; then
+            echo "::error::The keystore opened, but alias worldmod-release was not found."
+            exit 1
+          fi
           echo "Permanent signing key loaded and alias verified."
 
       - name: Build signed release APK
