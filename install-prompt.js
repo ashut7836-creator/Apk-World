@@ -47,12 +47,12 @@
     const card = document.createElement("aside");
     card.id = "wmo-install-prompt";
     card.setAttribute("role", "dialog");
-    card.setAttribute("aria-label", "Install WorldMod Official app");
+    card.setAttribute("aria-label", "Install World Mod Official app");
     card.innerHTML = `
       <div class="wmo-head">
         <div class="wmo-logo" aria-hidden="true">W</div>
         <div class="wmo-copy">
-          <strong>Get the WorldMod Official app</strong>
+          <strong>Get the World Mod Official app</strong>
           <small>Enjoy a smoother experience and convenient downloads.</small>
         </div>
         <button class="wmo-close" type="button" aria-label="Close">×</button>
