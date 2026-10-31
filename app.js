@@ -64,6 +64,14 @@
     if (typeof id !== "string" || !/^[A-Za-z0-9_-]{10,}$/.test(id)) return null;
     return API + "/api/files/" + encodeURIComponent(id);
   }
+  function configureBrowserDownload(anchor, href) {
+    anchor.href = href;
+    anchor.target = "_self";
+    anchor.setAttribute("download", "");
+    anchor.rel = "noopener";
+    anchor.referrerPolicy = "no-referrer";
+    return anchor;
+  }
   function render() {
     const query = search.value.trim().toLowerCase();
     const visible = items.filter(item =>
@@ -124,10 +132,11 @@
         const url=fileUrl(item.file_path);
         if (isVideo) {
           const button = make("a","card-action","Download video ↓");
-          button.href=url; button.rel="noopener"; card.append(button);
+          configureBrowserDownload(button, url);
+          card.append(button);
         } else {
           const button=make("a","card-action",isNativeAndroidApp ? "Install" : "Download APK ↓");
-          button.href=url; button.rel="noopener";
+          configureBrowserDownload(button, url);
           if (isNativeAndroidApp) button.setAttribute("aria-label", "Download and install " + (item.title || "this app"));
           card.append(button);
         }
@@ -153,8 +162,8 @@
               const href=row.drive_file_id?fileUrl(row.drive_file_id):httpsUrl(row.url);
               if(!href)return;
               const a=make("a","", "Version "+(row.version||"unspecified")+" · "+(row.published_at||""));
-              a.href=href;
-              a.rel="noopener";
+              if (row.drive_file_id) configureBrowserDownload(a, href);
+              else { a.href=href; a.target="_blank"; a.rel="noopener noreferrer"; }
               const small=make("small","",row.title+" · "+bytes(Number(row.file_size||0)));
               a.append(small);historyPanel.append(a);
             });
@@ -188,9 +197,13 @@
       const href = item.file_path ? fileUrl(item.file_path) : httpsUrl(item.url);
       row.append(icon,info);
       if (href) {
-        const action = make("a","home-latest-open",item.type === "app" ? (isNativeAndroidApp ? "Install ↓" : "Download ↓") : (item.type === "video" && item.file_path ? "Download ↓" : "Open ↗"));
-        action.href = href;
-        if (item.type === "link" || (item.type === "video" && !item.file_path)) { action.target = "_blank"; action.rel = "noopener noreferrer"; }
+        const hasHostedFile = Boolean(item.file_path && (item.type === "app" || item.type === "video"));
+        const label = hasHostedFile
+          ? (item.type === "app" && isNativeAndroidApp ? "Install ↓" : "Download ↓")
+          : "Open ↗";
+        const action = make("a","home-latest-open",label);
+        if (hasHostedFile) configureBrowserDownload(action, href);
+        else { action.href = href; action.target = "_blank"; action.rel = "noopener noreferrer"; }
         row.append(action);
       }
       target.append(row);
