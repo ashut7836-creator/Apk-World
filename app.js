@@ -3,8 +3,10 @@
   const grid = document.getElementById("library-grid");
   const count = document.getElementById("item-count");
   const search = document.getElementById("search");
+  const sortSelect = document.getElementById("sort-items");
   let items = [];
   let filter = "all";
+  let sort = "newest";
   document.getElementById("year").textContent = new Date().getFullYear();
 
   const make = (tag, className, value) => {
@@ -23,7 +25,8 @@
       type: row.kind, title: row.title, description: row.description || "",
       version: row.version || "", size: row.file_size ? bytes(Number(row.file_size)) : "",
       date: row.published_at || "", url: row.url || "",
-      file_path: row.drive_file_id || "", thumbnail: row.thumbnail_url || ""
+      file_path: row.drive_file_id || "", thumbnail: row.thumbnail_url || "",
+      sha256: row.sha256 || "", downloads: Number(row.download_count || 0)
     };
   }
   function bytes(n) {
@@ -42,6 +45,7 @@
       (filter === "all" || item.type === filter) &&
       (String(item.title || "") + " " + String(item.description || "")).toLowerCase().includes(query)
     );
+    visible.sort((a,b) => sort === "popular" ? (b.downloads-a.downloads) : sort === "az" ? String(a.title).localeCompare(String(b.title)) : String(b.date).localeCompare(String(a.date)));
     count.textContent = visible.length + (visible.length === 1 ? " item" : " items");
     grid.replaceChildren();
     if (!visible.length) {
@@ -73,8 +77,15 @@
         const parsedDate = new Date(item.date + "T00:00:00");
         if (!Number.isNaN(parsedDate.getTime())) details.push(parsedDate.toLocaleDateString());
       }
+      if (item.downloads) details.push(item.downloads.toLocaleString() + " downloads");
       meta.append(make("span", "", details.join(" · ") || (isVideo ? "VIDEO" : "ANDROID")));
       card.append(meta);
+      if (item.sha256) {
+        const checksum=make("div","checksum","SHA-256 (publisher-provided): " + item.sha256);
+        const copy=make("button","","Copy checksum");
+        copy.addEventListener("click", async () => { try { await navigator.clipboard.writeText(item.sha256); copy.textContent="Copied"; } catch { copy.textContent="Copy unavailable"; } });
+        checksum.append(copy); card.append(checksum);
+      }
       if (isLink && httpsUrl(item.url)) {
         const link = make("a", "card-action", "Open link ↗");
         link.href = httpsUrl(item.url); link.target="_blank"; link.rel="noopener noreferrer"; card.append(link);
@@ -93,6 +104,32 @@
       } else {
         card.append(make("p", "hint", "File or link not available."));
       }
+      if (item.type === "app") {
+        const historyButton=make("button","version-toggle","Version history");
+        const historyPanel=make("div","version-list hidden");
+        historyButton.addEventListener("click",async()=>{
+          historyPanel.classList.toggle("hidden");
+          if(historyPanel.dataset.loaded==="yes")return;
+          historyPanel.textContent="Loading versions…";
+          try{
+            const response=await fetch(API+"/api/catalogue/versions?title="+encodeURIComponent(item.title),{cache:"no-store"});
+            if(!response.ok)throw new Error("Version history unavailable.");
+            const rows=await response.json();historyPanel.replaceChildren();
+            if(!Array.isArray(rows)||!rows.length){historyPanel.textContent="No previous versions listed.";return;}
+            rows.forEach(row=>{
+              const href=row.drive_file_id?fileUrl(row.drive_file_id):httpsUrl(row.url);
+              if(!href)return;
+              const a=make("a","", "Version "+(row.version||"unspecified")+" · "+(row.published_at||""));
+              a.href=href;a.target="_blank";a.rel="noopener noreferrer";
+              const small=make("small","",row.title+" · "+bytes(Number(row.file_size||0)));
+              a.append(small);historyPanel.append(a);
+            });
+            if(!historyPanel.childElementCount)historyPanel.textContent="No downloadable versions listed.";
+            historyPanel.dataset.loaded="yes";
+          }catch(e){historyPanel.textContent=e.message;}
+        });
+        card.append(historyButton,historyPanel);
+      }
       grid.append(card);
     });
   }
@@ -103,6 +140,7 @@
     });
   });
   search.addEventListener("input", render);
+  if (sortSelect) sortSelect.addEventListener("change", () => { sort=sortSelect.value; render(); });
   async function loadCatalogue() {
     const response = await fetch(API + "/api/catalogue", { headers: { Accept:"application/json" }, cache:"no-store" });
     if (!response.ok) throw new Error("Could not load the live catalogue.");
