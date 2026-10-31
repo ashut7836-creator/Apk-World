@@ -154,8 +154,7 @@
               if(!href)return;
               const a=make("a","", "Version "+(row.version||"unspecified")+" · "+(row.published_at||""));
               a.href=href;
-              if (isNativeAndroidApp) a.rel="noopener";
-              else { a.target="_blank"; a.rel="noopener noreferrer"; }
+              a.rel="noopener";
               const small=make("small","",row.title+" · "+bytes(Number(row.file_size||0)));
               a.append(small);historyPanel.append(a);
             });
