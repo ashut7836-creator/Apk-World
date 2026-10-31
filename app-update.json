@@ -1,0 +1,8 @@
+{
+  "packageName": "com.worldmodsofficial.app",
+  "versionCode": 4,
+  "versionName": "1.0",
+  "apkUrl": "https://github.com/ashut7836-creator/Apk-World/releases/latest/download/WorldMod-Official.apk",
+  "mandatory": false,
+  "releaseNotes": "World Mods Official 1.0: in-app app store, APK download progress and notifications, app metadata, and download/install improvements."
+}
