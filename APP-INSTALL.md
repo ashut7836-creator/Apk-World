@@ -1,7 +1,7 @@
-# World Mods Official — Android app
+# World Mod Official — Android app
 
 ## Website and installed app
-The public GitHub Pages website and the installed Android app use the same World Mods catalogue and community backend. The website-only APK promotion is hidden in the native Android WebView.
+The public GitHub Pages website and the installed Android app use the same World Mod catalogue and community backend. The website-only APK promotion is hidden in the native Android WebView.
 
 ## In-app app store
 In the Android app, the Explore tab opens on the Apps catalogue. APK cards show the extracted app icon and available version/package details. Tapping Install starts an Android DownloadManager download in the app. The app shows download progress; Android can also display the system download notification. When the file is ready, tap Install to open Android's package installer and approve the installation.
