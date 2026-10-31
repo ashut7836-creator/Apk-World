@@ -12,6 +12,19 @@
   let category = "";
   let androidQuery = "";
   const isNativeAndroidApp = /WorldModOfficialApp/i.test(navigator.userAgent || "");
+  if (isNativeAndroidApp) {
+    filter = "app";
+    document.body.classList.add("native-store-mode");
+    const exploreTitle = document.getElementById("explore-title");
+    const exploreDescription = document.querySelector("#explore-view .screen-heading p");
+    const storeTab = document.querySelector('.bottom-nav-item[data-open-tab="explore"] b');
+    const appFilter = document.querySelector('.filter[data-filter="app"]');
+    document.querySelectorAll(".filter").forEach(button => button.classList.remove("active"));
+    if (appFilter) appFilter.classList.add("active");
+    if (exploreTitle) exploreTitle.textContent = "App Store";
+    if (exploreDescription) exploreDescription.textContent = "Browse apps and download them inside World Mods Official.";
+    if (storeTab) storeTab.textContent = "Store";
+  }
   document.getElementById("year").textContent = new Date().getFullYear();
 
   const make = (tag, className, value) => {
