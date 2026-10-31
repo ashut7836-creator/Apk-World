@@ -15,10 +15,10 @@
   function setMode(next){mode=next;$("#tab-login").classList.toggle("active",mode==="login");$("#tab-register").classList.toggle("active",mode==="register");$("#auth-submit").textContent=mode==="login"?"Log in":"Create account";$("#community-pin").autocomplete=mode==="login"?"current-password":"new-password";status("auth-status","");}
   function showAuth(note){me=null;window.WMO_COMMUNITY_USER=null;document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:null}));$("#member-area").classList.add("hidden");$("#community-auth").classList.remove("hidden");if(poll){clearInterval(poll);poll=null;}if(note)status("auth-status",note,"error");}
   function showMember(user){
-    me=user;window.WMO_COMMUNITY_USER=user;document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:user}));$("#community-auth").classList.add("hidden");$("#member-area").classList.remove("hidden");
+    me=user;window.WMO_COMMUNITY_USER=user;$("#community-auth").classList.add("hidden");$("#member-area").classList.remove("hidden");
     $("#member-name").textContent=user.username;$("#member-avatar").textContent=user.username.slice(0,1).toUpperCase();$("#member-role").textContent=user.role;$("#member-details").textContent="Joined "+new Date(Number(user.created_at)*1000).toLocaleDateString();
     $("#community-admin-link").classList.toggle("hidden",!["admin","owner"].includes(user.role));
-    $("#community-admin-link").href="https://world-mods-official-api.ashut7836.workers.dev/community-admin#community="+encodeURIComponent(token);
+    $("#community-admin-link").href="https://world-mods-official-api.ashut7836.workers.dev/community-admin#community="+encodeURIComponent(token);\n    document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:user}));
   }
   function renderMessages(rows){
     const feed=$("#chat-feed");feed.replaceChildren();
