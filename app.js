@@ -24,6 +24,11 @@
     try { const parsed = new URL(value); return parsed.protocol === "https:" ? parsed.href : null; }
     catch { return null; }
   }
+  function imageSource(value) {
+    if (typeof value !== "string" || !value.trim()) return null;
+    if (value.length <= 120000 && /^data:image\/(?:png|webp);base64,[A-Za-z0-9+/=]+$/.test(value)) return value;
+    return httpsUrl(value);
+  }
   function mapRecord(row) {
     return {
       type: row.kind, title: row.title, description: row.description || "",
