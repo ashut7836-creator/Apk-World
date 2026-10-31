@@ -1,7 +1,7 @@
-const CACHE_NAME = "wmo-shell-v5";
+const CACHE_NAME = "wmo-shell-v6";
 const APP_SHELL = [
   "./", "./index.html", "./styles.css", "./pwa.css", "./app.js?v=2", "./app-shell.css?v=2", "./app-shell.js?v=2",
-  "./pwa.js", "./manifest.json", "./favicon.svg", "./offline.html",
+  "./pwa.js", "./install-prompt.js?v=1", "./manifest.json", "./favicon.svg", "./offline.html",
   "./community.html", "./community.css", "./community.js?v=2", "./shoutout.js?v=2",
   "./icons/icon-192.png", "./icons/icon-512.png"
 ];
