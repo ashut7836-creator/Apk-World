@@ -22,7 +22,7 @@
     document.querySelectorAll(".filter").forEach(button => button.classList.remove("active"));
     if (appFilter) appFilter.classList.add("active");
     if (exploreTitle) exploreTitle.textContent = "App Store";
-    if (exploreDescription) exploreDescription.textContent = "Browse apps and download them inside World Mods Official.";
+    if (exploreDescription) exploreDescription.textContent = "Browse apps and download them inside World Mod Official.";
     if (storeTab) storeTab.textContent = "Store";
   }
   document.getElementById("year").textContent = new Date().getFullYear();
@@ -232,7 +232,7 @@
       .catch(()=>{
         count.textContent="Library unavailable";grid.replaceChildren();
         const empty=make("div","empty");
-        empty.append(make("h3","","World Mods Official is temporarily unavailable"));
+        empty.append(make("h3","","World Mod Official is temporarily unavailable"));
         empty.append(make("p","","Please refresh the page later."));
         grid.append(empty);
       });

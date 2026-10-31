@@ -1,8 +1,8 @@
 {
   "id": "/Apk-World/",
-  "name": "World Mods Official",
-  "short_name": "World Mods",
-  "description": "Discover apps, Android downloads, links and videos from World Mods Official.",
+  "name": "World Mod Official",
+  "short_name": "World Mod",
+  "description": "Discover apps, Android downloads, links and videos from World Mod Official.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
