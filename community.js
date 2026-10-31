@@ -13,9 +13,9 @@
     return data;
   }
   function setMode(next){mode=next;$("#tab-login").classList.toggle("active",mode==="login");$("#tab-register").classList.toggle("active",mode==="register");$("#auth-submit").textContent=mode==="login"?"Log in":"Create account";$("#community-pin").autocomplete=mode==="login"?"current-password":"new-password";status("auth-status","");}
-  function showAuth(note){me=null;$("#member-area").classList.add("hidden");$("#community-auth").classList.remove("hidden");if(poll){clearInterval(poll);poll=null;}if(note)status("auth-status",note,"error");}
+  function showAuth(note){me=null;window.WMO_COMMUNITY_USER=null;document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:null}));$("#member-area").classList.add("hidden");$("#community-auth").classList.remove("hidden");if(poll){clearInterval(poll);poll=null;}if(note)status("auth-status",note,"error");}
   function showMember(user){
-    me=user;$("#community-auth").classList.add("hidden");$("#member-area").classList.remove("hidden");
+    me=user;window.WMO_COMMUNITY_USER=user;document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:user}));$("#community-auth").classList.add("hidden");$("#member-area").classList.remove("hidden");
     $("#member-name").textContent=user.username;$("#member-avatar").textContent=user.username.slice(0,1).toUpperCase();$("#member-role").textContent=user.role;$("#member-details").textContent="Joined "+new Date(Number(user.created_at)*1000).toLocaleDateString();
     $("#community-admin-link").classList.toggle("hidden",!["admin","owner"].includes(user.role));
     $("#community-admin-link").href="https://world-mods-official-api.ashut7836.workers.dev/community-admin#community="+encodeURIComponent(token);
@@ -43,12 +43,20 @@
   async function loadMessages(){try{const data=await api("/api/community/messages");renderMessages(data.messages||[]);}catch(e){if(e.message.toLowerCase().includes("sign in")||e.message.toLowerCase().includes("session"))showAuth("Please log in again.");}}
   async function loadNotifications(){
     const target=$("#notification-list");
-    try{const data=await api("/api/community/notifications");target.replaceChildren();if(!data.notifications.length){target.textContent="No updates yet.";target.className="community-muted";return;}
-      data.notifications.forEach(n=>{const row=document.createElement("div");row.className="notice-row";const title=document.createElement("strong");title.textContent=n.title;const body=document.createElement("p");body.textContent=n.body;const time=document.createElement("small");time.textContent=fmtDate(n.created_at);row.append(title,body,time);if(n.link){const a=document.createElement("a");a.href=n.link;a.textContent="Open ↗";a.className="community-muted";row.append(a);}if(!n.is_read){row.style.borderLeft="2px solid #69e5d0";row.style.paddingLeft="9px";}row.addEventListener("click",()=>{if(!n.is_read)api("/api/community/notifications/"+encodeURIComponent(n.id)+"/read",{method:"POST"}).catch(()=>{});});target.append(row);});
+    try{const data=await api("/api/community/notifications");target.replaceChildren();
+      let prefs={apps:true,shoutouts:true,updates:true,discussions:false};
+      try{prefs={...prefs,...JSON.parse(localStorage.getItem("wmo_notification_preferences:"+String(me?.username||"").toLowerCase())||"{}")};}catch{}
+      const notifications=(data.notifications||[]).filter(n=>{
+        const title=String(n.title||"");
+        const category=/shoutout|announcement/i.test(title)?"shoutouts":/^new upload:/i.test(title)?"apps":"updates";
+        return prefs[category]!==false;
+      });
+      if(!notifications.length){target.textContent="No updates yet. Your notification preferences are applied.";target.className="community-muted";return;}
+      notifications.forEach(n=>{const row=document.createElement("div");row.className="notice-row";const title=document.createElement("strong");title.textContent=n.title;const body=document.createElement("p");body.textContent=n.body;const time=document.createElement("small");time.textContent=fmtDate(n.created_at);row.append(title,body,time);if(n.link){const a=document.createElement("a");a.href=n.link;a.textContent="Open ↗";a.className="community-muted";row.append(a);}if(!n.is_read){row.style.borderLeft="2px solid #69e5d0";row.style.paddingLeft="9px";}row.addEventListener("click",()=>{if(!n.is_read)api("/api/community/notifications/"+encodeURIComponent(n.id)+"/read",{method:"POST"}).catch(()=>{});});target.append(row);});
     }catch(e){target.textContent=e.message;}
   }
   async function loadRequests(){const target=$("#my-requests");try{const d=await api("/api/community/requests");target.replaceChildren();if(!d.requests.length)return;const h=document.createElement("h3");h.textContent="Your requests";h.style.fontSize="13px";target.append(h);d.requests.forEach(r=>{const row=document.createElement("div");row.className="request-row";const t=document.createElement("strong");t.textContent=r.title;const p=document.createElement("p");p.textContent=r.details||"";const b=document.createElement("span");b.className="status-chip";b.textContent=r.status;row.append(t,p,b);target.append(row);});}catch{}}
-  async function refresh(){await Promise.all([loadMessages(),loadNotifications(),loadRequests()]);}
+  document.addEventListener("wmo-notification-prefs-changed",()=>{if(me)loadNotifications();});\n  async function refresh(){await Promise.all([loadMessages(),loadNotifications(),loadRequests()]);}
   async function boot(){
     if(!token){showAuth();return;}
     try{const d=await api("/api/community/me");showMember(d.user);await refresh();if(poll)clearInterval(poll);poll=setInterval(()=>{if(!document.hidden)refresh();},7000);}
