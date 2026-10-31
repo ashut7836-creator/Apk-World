@@ -8,7 +8,8 @@
 </head>
 <body>
 <div class="glow glow-a"></div><div class="glow glow-b"></div>
-<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="#library">Explore</a><a href="#about">About</a><button id="install-app" class="nav-button install-button" type="button" hidden>Install app</button><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin Login</a></nav></header>
+<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="#library">Explore</a><a href="community.html">Community</a><a href="#about">About</a><button id="install-app" class="nav-button install-button" type="button" hidden>Install app</button><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin Login</a></nav></header>
+<div id="global-shoutout" class="global-shoutout-host"></div>
 <main>
 <section class="hero"><div><div class="eyebrow"><span class="dot"></span> WORLD MODS OFFICIAL</div><h1>Discover.<br>Download.<br><span>Enjoy.</span></h1><p class="hero-copy">Discover apps, Android mods, download links and videos — all in one place.</p><a class="primary-button" href="#library">Explore library <span>↓</span></a></div>
 <div class="hero-art" aria-hidden="true"><div class="ring ring-one"></div><div class="ring ring-two"></div><div class="app-card"><img class="hero-logo" src="favicon.svg" alt="World Mods Official logo"></div><div class="float-tag tag-app">▣ APPS</div><div class="float-tag tag-video">▶ VIDEOS</div><div class="float-tag tag-link">↗ LINKS</div></div></section>
@@ -37,11 +38,11 @@
 </section>
 
 <section id="library" class="library"><div class="section-head"><div><div class="eyebrow">THE LIBRARY</div><h2>Explore the collection</h2><p class="muted">Find something useful or check out the latest uploads.</p></div><span id="item-count" class="count">Loading…</span></div>
-<div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search apps and videos…" autocomplete="off"></label><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="app">Apps</button><button class="filter" data-filter="video">Videos</button><button class="filter" data-filter="link">Links</button></div></div>
+<div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search apps and videos…" autocomplete="off"></label><label class="sort-label">Sort <select id="sort-items"><option value="newest">Newest</option><option value="popular">Most downloaded</option><option value="az">A–Z</option></select></label><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="app">Apps</button><button class="filter" data-filter="video">Videos</button><button class="filter" data-filter="link">Links</button></div></div>
 <div id="library-grid" class="grid"><div class="empty"><h3>Loading World Mods Official…</h3><p>Getting the latest uploads.</p></div></div></section>
 <section id="about" class="about"><span class="about-symbol">✦</span><div><div class="eyebrow">A NOTE FROM WORLD MODS OFFICIAL</div><h2>One home for your digital finds.</h2><p class="muted">A public library for apps, Android mods, APK links and videos. New content is added by the World Mods Official website manager.</p></div></section>
 </main>
 <footer><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><span>WORLD MODS OFFICIAL · Digital downloads and videos.</span><span>© <span id="year"></span> World Mods Official</span></footer>
 <div class="safety">Safety note: only download APKs from sources you trust. World Mods Official does not certify third-party files.</div>
-<script src="app.js?v=cloudflare-20261030"></script><script src="pwa.js?v=1"></script>
+<script src="shoutout.js?v=1"></script><script src="app.js?v=community-1"></script><script src="pwa.js?v=1"></script>
 </body></html>
