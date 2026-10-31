@@ -1,48 +1,173 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1020"><meta name="description" content="World Mods Official — apps, Android mods, download links and videos."><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>World Mods Official — Apps & Videos</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="pwa.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="World Mods Official — discover apps, Android downloads, community and updates.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>World Mods Official</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="pwa.css">
+<link rel="stylesheet" href="community.css">
+<link rel="stylesheet" href="app-shell.css?v=1">
 </head>
-<body>
+<body class="app-experience">
 <div class="glow glow-a"></div><div class="glow glow-b"></div>
-<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="#library">Explore</a><a href="community.html">Community</a><a href="#about">About</a><button id="install-app" class="nav-button install-button" type="button" hidden>Install app</button><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin Login</a></nav></header>
-<div id="global-shoutout" class="global-shoutout-host"></div>
-<main>
-<section class="hero"><div><div class="eyebrow"><span class="dot"></span> WORLD MODS OFFICIAL</div><h1>Discover.<br>Download.<br><span>Enjoy.</span></h1><p class="hero-copy">Discover apps, Android mods, download links and videos — all in one place.</p><a class="primary-button" href="#library">Explore library <span>↓</span></a></div>
-<div class="hero-art" aria-hidden="true"><div class="ring ring-one"></div><div class="ring ring-two"></div><div class="app-card"><img class="hero-logo" src="favicon.svg" alt="World Mods Official logo"></div><div class="float-tag tag-app">▣ APPS</div><div class="float-tag tag-video">▶ VIDEOS</div><div class="float-tag tag-link">↗ LINKS</div></div></section>
-<!-- Featured Telegram community -->
-<section class="telegram-feature" aria-labelledby="telegram-title">
-  <div class="telegram-motion" aria-hidden="true">
-    <span>WORLD MODS OFFICIAL</span><span>✦</span><span>JOIN THE COMMUNITY</span><span>✦</span>
-    <span>WORLD MODS OFFICIAL</span><span>✦</span><span>JOIN THE COMMUNITY</span><span>✦</span>
+<header class="app-topbar">
+  <a class="app-brand" href="#home" aria-label="World Mods Official home" data-open-tab="home">
+    <img src="favicon.svg" alt="" class="brand-avatar">
+    <span><b>WORLD MODS</b><small>OFFICIAL</small></span>
+  </a>
+  <div class="topbar-actions">
+    <button class="icon-action" id="top-notifications" type="button" aria-label="Open notifications" data-open-tab="profile"><span>♧</span></button>
+    <button class="icon-action admin-shortcut" type="button" aria-label="Admin login" onclick="location.href='https://world-mods-official-api.ashut7836.workers.dev/admin'"><span>⚙</span></button>
+    <button id="install-app" class="install-button" type="button" hidden>Install</button>
   </div>
-  <div class="telegram-content">
-    <div class="telegram-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" role="presentation">
-        <path d="M21.7 4.3 18.5 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6 13.6l-4.9-1.5c-1.1-.3-1.1-1 .2-1.5L20 3.2c.9-.3 1.9.2 1.7 1.1Z"/>
-      </svg>
-    </div>
-    <div class="telegram-copy">
-      <span class="telegram-kicker">THE OFFICIAL COMMUNITY</span>
-      <h2 id="telegram-title">WORLD MODS <strong>OFFICIAL</strong></h2>
-      <p>Join our Telegram channel for community updates and new additions.</p>
-    </div>
-    <a class="telegram-join" href="https://t.me/WORLDMODSOFFICIAI" target="_blank" rel="noopener noreferrer">
-      Join Telegram <span aria-hidden="true">↗</span>
-    </a>
-  </div>
-  <div class="telegram-shine" aria-hidden="true"></div>
-</section>
+</header>
 
-<section id="library" class="library"><div class="section-head"><div><div class="eyebrow">THE LIBRARY</div><h2>Explore the collection</h2><p class="muted">Find something useful or check out the latest uploads.</p></div><span id="item-count" class="count">Loading…</span></div>
-<div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search apps and videos…" autocomplete="off"></label><div class="extra-filters"><label for="category-filter">Category</label><select id="category-filter"><option value="">All categories</option></select><label for="android-filter">Android</label><input id="android-filter" type="search" placeholder="e.g. 8.0+" autocomplete="off"></div><label class="sort-label">Sort <select id="sort-items"><option value="newest">Newest</option><option value="popular">Most downloaded</option><option value="az">A–Z</option></select></label><div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="app">Apps</button><button class="filter" data-filter="video">Videos</button><button class="filter" data-filter="link">Links</button></div></div>
-<div id="library-grid" class="grid"><div class="empty"><h3>Loading World Mods Official…</h3><p>Getting the latest uploads.</p></div></div></section>
-<section id="about" class="about"><span class="about-symbol">✦</span><div><div class="eyebrow">A NOTE FROM WORLD MODS OFFICIAL</div><h2>One home for your digital finds.</h2><p class="muted">A public library for apps, Android mods, APK links and videos. New content is added by the World Mods Official website manager.</p></div></section>
+<main class="app-main">
+  <div id="global-shoutout" class="global-shoutout-host"></div>
+
+  <section id="home-view" class="app-screen active" aria-labelledby="home-title">
+    <div class="welcome-panel">
+      <div class="welcome-copy">
+        <span class="eyebrow"><i class="status-dot"></i> YOUR DIGITAL HUB</span>
+        <h1 id="home-title">Everything you need.<br><span>All in one place.</span></h1>
+        <p>Discover useful apps, explore new uploads and connect with the World Mods community.</p>
+        <button class="primary-button" type="button" data-open-tab="explore">Explore downloads <span>↗</span></button>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <div class="welcome-orbit orbit-one"></div><div class="welcome-orbit orbit-two"></div>
+        <img src="favicon.svg" alt="" class="welcome-logo">
+        <span class="orbit-label label-apps">APPS</span><span class="orbit-label label-community">COMMUNITY</span>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <div><span class="eyebrow">QUICK ACCESS</span><h2>Where would you like to go?</h2></div>
+    </div>
+    <div class="quick-grid">
+      <button class="quick-tile" type="button" data-open-tab="explore"><span class="quick-icon">↓</span><b>Explore</b><small>Apps, APKs and links</small><span class="tile-arrow">↗</span></button>
+      <button class="quick-tile" type="button" data-open-tab="community"><span class="quick-icon">☏</span><b>Community</b><small>Chat and connect</small><span class="tile-arrow">↗</span></button>
+      <button class="quick-tile" type="button" data-open-tab="community" data-community-subtab="requests"><span class="quick-icon">＋</span><b>Request an app</b><small>Ask us to add something</small><span class="tile-arrow">↗</span></button>
+      <button class="quick-tile" type="button" data-open-tab="profile"><span class="quick-icon">♙</span><b>Your profile</b><small>Account and preferences</small><span class="tile-arrow">↗</span></button>
+    </div>
+
+    <section class="home-highlight">
+      <div class="highlight-icon">✦</div>
+      <div class="highlight-copy"><span class="eyebrow">THE OFFICIAL COMMUNITY</span><h2>Stay connected with us</h2><p>Get announcements and discover what’s new in World Mods Official.</p></div>
+      <a href="https://t.me/WORLDMODSOFFICIAI" target="_blank" rel="noopener noreferrer" class="telegram-join">Join Telegram ↗</a>
+    </section>
+    <div class="home-footnote"><span>WORLD MODS OFFICIAL</span><span>Discover · Download · Connect</span></div>
+  </section>
+
+  <section id="explore-view" class="app-screen" aria-labelledby="explore-title">
+    <div class="screen-heading">
+      <span class="eyebrow">DISCOVER SOMETHING NEW</span>
+      <h1 id="explore-title">Explore <span>downloads.</span></h1>
+      <p>Find apps, APKs, videos and useful links from the library.</p>
+    </div>
+    <section id="library" class="library">
+      <div class="section-head"><div><div class="eyebrow">THE LIBRARY</div><h2>All uploads</h2><p class="muted">Search, filter and find what you need.</p></div><span id="item-count" class="count">Loading…</span></div>
+      <div class="toolbar">
+        <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search apps and videos…" autocomplete="off"></label>
+        <div class="extra-filters"><label for="category-filter">Category</label><select id="category-filter"><option value="">All categories</option></select><label for="android-filter">Android</label><input id="android-filter" type="search" placeholder="e.g. 8.0+" autocomplete="off"></div>
+        <label class="sort-label">Sort <select id="sort-items"><option value="newest">Newest</option><option value="popular">Most downloaded</option><option value="az">A–Z</option></select></label>
+        <div class="filters"><button class="filter active" data-filter="all" type="button">All</button><button class="filter" data-filter="app" type="button">Apps</button><button class="filter" data-filter="video" type="button">Videos</button><button class="filter" data-filter="link" type="button">Links</button></div>
+      </div>
+      <div id="library-grid" class="grid"><div class="empty"><h3>Loading World Mods Official…</h3><p>Getting the latest uploads.</p></div></div>
+    </section>
+    <div class="safety">Download only files and apps you trust. World Mods Official does not independently certify third-party files.</div>
+  </section>
+
+  <section id="community-view" class="app-screen" aria-labelledby="community-title">
+    <div class="screen-heading community-screen-heading"><span class="eyebrow">MEET · SHARE · REQUEST</span><h1 id="community-title">Community<span>.</span></h1><p>Connect with members and follow official updates.</p></div>
+    <section id="community-auth" class="community-panel community-auth">
+      <div class="eyebrow">MEMBER ACCESS</div><h2>Welcome to the community</h2><p>Log in or create an account to chat, request apps and follow your activity.</p>
+      <div class="community-tabs"><button id="tab-login" class="active" type="button">Log in</button><button id="tab-register" type="button">Create account</button></div>
+      <form id="community-auth-form">
+        <div class="community-field"><label for="community-username">Username</label><input id="community-username" name="username" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username" required placeholder="YourUsername"></div>
+        <div class="community-field"><label for="community-pin">Private 6-digit PIN</label><input id="community-pin" name="pin" type="password" inputmode="numeric" minlength="6" maxlength="6" pattern="[0-9]{6}" autocomplete="current-password" required placeholder="••••••"></div>
+        <button id="auth-submit" class="community-primary" type="submit">Log in</button><p id="auth-status" class="community-status" role="status"></p>
+      </form>
+      <p class="community-muted">Keep your PIN private. Do not reuse a bank, phone or other important PIN.</p>
+    </section>
+
+    <section id="member-area" class="hidden">
+      <div class="member-bar">
+        <div class="member-id"><div id="member-avatar" class="member-avatar">M</div><div><strong id="member-name">Member</strong><small id="member-details">Member account</small></div><span id="member-role" class="role-chip">Member</span></div>
+        <div class="community-actions"><a id="community-admin-link" class="community-secondary hidden" href="https://world-mods-official-api.ashut7836.workers.dev/community-admin">Admin tools</a><button id="community-logout" class="community-secondary" type="button">Log out</button></div>
+      </div>
+
+      <div class="community-subnav" role="tablist" aria-label="Community sections">
+        <button class="community-subtab active" type="button" data-community-view="discussion">Discussion</button>
+        <button class="community-subtab" type="button" data-community-view="requests">App requests</button>
+        <button class="community-subtab" type="button" data-community-view="feedback">Report a problem</button>
+      </div>
+
+      <div id="community-discussion-view" class="community-subscreen active">
+        <section class="community-panel chat-panel">
+          <div class="community-section-title"><div><div class="eyebrow">PUBLIC ROOM</div><h2>Community chat</h2></div><span id="online-note" class="community-muted">Shared room</span></div>
+          <p>Share questions, ideas and updates. Be respectful and never post private information.</p>
+          <div id="chat-feed" class="chat-feed" aria-live="polite"><div class="chat-empty">Loading messages…</div></div>
+          <form id="message-form" class="chat-composer"><div class="community-field"><label class="visually-hidden" for="message-text">Write a message</label><textarea id="message-text" maxlength="500" rows="2" placeholder="Write a message…" required></textarea></div><div class="composer-bottom"><span class="community-muted">500 characters max · 4-second cooldown</span><button id="send-message" class="community-primary" type="submit">Send ↗</button></div><p id="message-status" class="community-status" role="status"></p></form>
+        </section>
+      </div>
+
+      <div id="community-requests-view" class="community-subscreen">
+        <section class="community-panel"><div class="eyebrow">REQUEST BOARD</div><h2>Request an app</h2><p>Tell us what app or resource you are looking for. Requests are reviewed before anything is added.</p>
+          <form id="request-form"><div class="community-field"><label for="request-title">App or resource name</label><input id="request-title" maxlength="120" required placeholder="App name"></div><div class="community-field"><label for="request-details">Details (optional)</label><textarea id="request-details" maxlength="500" rows="3" placeholder="Version, platform or details"></textarea></div><button class="community-primary" type="submit">Submit request</button><p id="request-status" class="community-status" role="status"></p></form>
+          <div id="my-requests" class="my-requests"></div>
+        </section>
+      </div>
+
+      <div id="community-feedback-view" class="community-subscreen">
+        <section class="community-panel"><div class="eyebrow">HELP US IMPROVE</div><h2>Report a problem</h2><p>Report broken download links, incorrect app information or issues with the site. Do not include personal details.</p>
+          <form id="problem-form"><div class="community-field"><label for="problem-title">What is the problem?</label><input id="problem-title" maxlength="120" required placeholder="Short description"></div><div class="community-field"><label for="problem-details">Details</label><textarea id="problem-details" maxlength="600" rows="4" required placeholder="Tell us what needs fixing"></textarea></div><button class="community-primary" type="submit">Send report</button><p id="problem-status" class="community-status" role="status"></p></form>
+        </section>
+      </div>
+    </section>
+  </section>
+
+  <section id="profile-view" class="app-screen" aria-labelledby="profile-title">
+    <div class="screen-heading"><span class="eyebrow">YOUR SPACE</span><h1 id="profile-title">Your <span>profile.</span></h1><p>Manage your account, preferences and official notifications.</p></div>
+    <section id="profile-signin-card" class="profile-card profile-signin"><div class="profile-avatar">W</div><div><h2>Sign in to your account</h2><p>Join the community to manage your profile and notification preferences.</p><button class="community-primary" type="button" data-open-tab="community">Open community sign in</button></div></section>
+    <section id="profile-account-card" class="profile-card hidden"><div class="profile-avatar" id="profile-avatar">M</div><div class="profile-account-copy"><span class="eyebrow">SIGNED IN MEMBER</span><h2 id="profile-username">Member</h2><p id="profile-account-meta">Community account</p><span class="role-chip" id="profile-role">Member</span></div><div class="profile-account-actions"><button class="community-secondary" type="button" data-open-tab="community">Community</button><a id="profile-admin-link" class="community-secondary hidden" href="https://world-mods-official-api.ashut7836.workers.dev/community-admin">Admin tools</a></div></section>
+
+    <section class="profile-card">
+      <div class="profile-section-head"><div><span class="eyebrow">YOUR PREFERENCES</span><h2>Notifications</h2><p>Choose which official updates appear in your notification centre on this device.</p></div><span class="profile-bell">♧</span></div>
+      <div class="preference-list">
+        <label class="preference-row"><span><b>New app uploads</b><small>When a new app or download is added</small></span><input id="pref-apps" type="checkbox" checked></label>
+        <label class="preference-row"><span><b>Official shoutouts</b><small>Announcements published by the owner</small></span><input id="pref-shoutouts" type="checkbox" checked></label>
+        <label class="preference-row"><span><b>Important app updates</b><small>Important catalogue and service updates</small></span><input id="pref-updates" type="checkbox" checked></label>
+        <label class="preference-row"><span><b>Community discussions</b><small>Chat activity (off by default)</small></span><input id="pref-discussions" type="checkbox"></label>
+      </div>
+      <p id="preferences-status" class="community-status" role="status">Your choices are saved on this device.</p>
+    </section>
+
+    <section class="profile-card notification-card"><div class="profile-section-head"><div><span class="eyebrow">YOUR INBOX</span><h2>Notification centre</h2><p>Official announcements and upload alerts.</p></div><span class="profile-bell">✦</span></div><div id="notification-list"><p class="community-muted">Log in to view your notifications.</p></div></section>
+    <div class="profile-note">Account security: keep your PIN private. Notifications are in-app only; browser or Android push notifications are not enabled yet.</div>
+  </section>
 </main>
-<footer><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><span>WORLD MODS OFFICIAL · Digital downloads and videos.</span><span>© <span id="year"></span> World Mods Official</span></footer>
-<div class="safety">Safety note: only download APKs from sources you trust. World Mods Official does not certify third-party files.</div>
-<script src="shoutout.js?v=1"></script><script src="app.js?v=community-2"></script><script src="pwa.js?v=1"></script>
-</body></html>
+
+<nav class="bottom-nav" aria-label="Main navigation">
+  <button type="button" class="bottom-nav-item active" data-open-tab="home" aria-current="page"><span class="nav-symbol">⌂</span><b>Home</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="explore"><span class="nav-symbol">⌕</span><b>Explore</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="community"><span class="nav-symbol">☏</span><b>Community</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="profile"><span class="nav-symbol">♙</span><b>Profile</b></button>
+</nav>
+
+<footer class="app-footer"><span>WORLD MODS OFFICIAL</span><span>Built for discovery and community.</span><span>© <span id="year"></span></span></footer>
+<script src="app.js?v=app-shell-1"></script>
+<script src="community.js?v=app-shell-1"></script>
+<script src="shoutout.js?v=2"></script>
+<script src="app-shell.js?v=1"></script>
+<script src="pwa.js?v=1"></script>
+</body>
+</html>
