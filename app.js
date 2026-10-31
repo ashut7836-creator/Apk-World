@@ -4,9 +4,13 @@
   const count = document.getElementById("item-count");
   const search = document.getElementById("search");
   const sortSelect = document.getElementById("sort-items");
+  const categorySelect = document.getElementById("category-filter");
+  const androidFilter = document.getElementById("android-filter");
   let items = [];
   let filter = "all";
   let sort = "newest";
+  let category = "";
+  let androidQuery = "";
   document.getElementById("year").textContent = new Date().getFullYear();
 
   const make = (tag, className, value) => {
@@ -26,7 +30,8 @@
       version: row.version || "", size: row.file_size ? bytes(Number(row.file_size)) : "",
       date: row.published_at || "", url: row.url || "",
       file_path: row.drive_file_id || "", thumbnail: row.thumbnail_url || "",
-      sha256: row.sha256 || "", downloads: Number(row.download_count || 0)
+      sha256: row.sha256 || "", downloads: Number(row.download_count || 0),
+      category: row.category || "", android_requirement: row.android_requirement || ""
     };
   }
   function bytes(n) {
@@ -43,7 +48,9 @@
     const query = search.value.trim().toLowerCase();
     const visible = items.filter(item =>
       (filter === "all" || item.type === filter) &&
-      (String(item.title || "") + " " + String(item.description || "")).toLowerCase().includes(query)
+      (String(item.title || "") + " " + String(item.description || "") + " " + String(item.category || "") + " " + String(item.android_requirement || "")).toLowerCase().includes(query) &&
+      (!category || item.category === category) &&
+      (!androidQuery || String(item.android_requirement || "").toLowerCase().includes(androidQuery))
     );
     visible.sort((a,b) => sort === "popular" ? (b.downloads-a.downloads) : sort === "az" ? String(a.title).localeCompare(String(b.title)) : String(b.date).localeCompare(String(a.date)));
     count.textContent = visible.length + (visible.length === 1 ? " item" : " items");
@@ -78,6 +85,8 @@
         if (!Number.isNaN(parsedDate.getTime())) details.push(parsedDate.toLocaleDateString());
       }
       if (item.downloads) details.push(item.downloads.toLocaleString() + " downloads");
+      if (item.category) details.push(item.category);
+      if (item.android_requirement) details.push(item.android_requirement);
       meta.append(make("span", "", details.join(" · ") || (isVideo ? "VIDEO" : "ANDROID")));
       card.append(meta);
       if (item.sha256) {
@@ -140,6 +149,8 @@
     });
   });
   search.addEventListener("input", render);
+  if (categorySelect) categorySelect.addEventListener("change", () => { category = categorySelect.value; render(); });
+  if (androidFilter) androidFilter.addEventListener("input", () => { androidQuery = androidFilter.value.trim().toLowerCase(); render(); });
   if (sortSelect) sortSelect.addEventListener("change", () => { sort=sortSelect.value; render(); });
   async function loadCatalogue() {
     const response = await fetch(API + "/api/catalogue", { headers: { Accept:"application/json" }, cache:"no-store" });
@@ -148,7 +159,16 @@
     if (!Array.isArray(data)) throw new Error("The live catalogue returned an invalid response.");
     return data.filter(row => row && ["app","video","link"].includes(row.kind) && typeof row.title === "string").map(mapRecord);
   }
-  loadCatalogue().then(data => { items=data; render(); }).catch(error => {
+  loadCatalogue().then(data => {
+    items=data;
+    if (categorySelect) {
+      const categories = [...new Set(items.map(item => item.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      categorySelect.replaceChildren(make("option","","All categories"));
+      categorySelect.options[0].value = "";
+      categories.forEach(value => { const option=make("option","",value); option.value=value; categorySelect.append(option); });
+    }
+    render();
+  }).catch(error => {
     console.error(error);
     fetch("media.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Fallback unavailable");return r.json();})
       .then(data=>{items=Array.isArray(data)?data.filter(x=>x&&["app","video","link"].includes(x.type)):[];render();grid.prepend(make("p","hint","Showing the saved fallback list while the new catalogue is being configured."));})
