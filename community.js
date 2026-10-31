@@ -18,6 +18,7 @@
     me=user;$("#community-auth").classList.add("hidden");$("#member-area").classList.remove("hidden");
     $("#member-name").textContent=user.username;$("#member-avatar").textContent=user.username.slice(0,1).toUpperCase();$("#member-role").textContent=user.role;$("#member-details").textContent="Joined "+new Date(Number(user.created_at)*1000).toLocaleDateString();
     $("#community-admin-link").classList.toggle("hidden",!["admin","moderator","owner"].includes(user.role));
+    $("#community-admin-link").href="https://world-mods-official-api.ashut7836.workers.dev/community-admin#community="+encodeURIComponent(token);
   }
   function renderMessages(rows){
     const feed=$("#chat-feed");feed.replaceChildren();
