@@ -15,3 +15,7 @@ The native app checks the configured app-update.json feed. A release feed must o
 
 ## Community accounts
 Community account records are stored on the server. A reinstall may clear the device's saved login session, so a member may need to sign in again using the same account credentials.
+
+
+## Direct browser downloads
+Public APK and video links use the site's Cloudflare download endpoint. The Worker checks that a catalogue item is published, retrieves the media through the site's private Google Drive connection, and streams it to the visitor with an attachment filename. Visitors do not need to sign in to Google Drive or open a Drive page. Byte-range requests are forwarded for resumable/partial downloads. The original Drive storage and private admin upload connection remain unchanged.
