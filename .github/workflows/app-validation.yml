@@ -8,6 +8,10 @@ on:
       - "app.js"
       - "app-shell.js"
       - "app-shell.css"
+      - "admin-upload-helper.js"
+      - "cloudflare/src/index.js"
+      - "cloudflare/migrations/**"
+      - "app-shell.css"
       - "community.js"
       - "service-worker.js"
       - "manifest.json"
@@ -36,6 +40,8 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check app.js
+          node --check admin-upload-helper.js
+          node --check cloudflare/src/index.js
           node --check app-shell.js
           node --check community.js
           node --check shoutout.js
