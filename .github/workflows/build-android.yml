@@ -36,7 +36,10 @@ jobs:
           gradle -p android :app:assembleDebug --no-daemon --stacktrace
           APK="android/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
-          aapt dump badging "$APK" | grep -E "^package: name='com.worldmodsofficial.app' versionCode='4' versionName='1.0'"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}}"
+          AAPT="$(find "$SDK_ROOT/build-tools" -mindepth 2 -maxdepth 2 -type f -name aapt | sort -V | tail -n1)"
+          test -x "$AAPT"
+          "$AAPT" dump badging "$APK" | grep -E "^package: name='com.worldmodsofficial.app' versionCode='4' versionName='1.0'"
       - name: Upload compile-check APK
         uses: actions/upload-artifact@v4
         with:
@@ -63,19 +66,18 @@ jobs:
           gradle-version: "8.9"
 
       - name: Prepare permanent signing key
+        id: prepare_signing
         env:
           ANDROID_SIGNING_KEY_B64: ${{ secrets.ANDROID_SIGNING_KEY_BASE64 || secrets.ANDROID_SIGNING_KEY }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
-          if [ -z "${ANDROID_SIGNING_KEY_B64:-}" ]; then
-            echo "::error::The repository secret ANDROID_SIGNING_KEY_BASE64 (or legacy ANDROID_SIGNING_KEY) is missing or empty."
-            exit 1
+          if [ -z "${ANDROID_SIGNING_KEY_B64:-}" ] || [ -z "${ANDROID_KEYSTORE_PASSWORD:-}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Permanent signing secrets are not configured. The debug compile check will still run, but no installable signed release artifact will be created."
+            exit 0
           fi
-          if [ -z "${ANDROID_KEYSTORE_PASSWORD:-}" ]; then
-            echo "::error::The repository secret ANDROID_KEYSTORE_PASSWORD is missing or empty."
-            exit 1
-          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
           SIGNING_KEY_CLEAN="$(printf '%s' "$ANDROID_SIGNING_KEY_B64" | tr -d '[:space:]')"
           mkdir -p android/app/build/secure
           if ! printf '%s' "$SIGNING_KEY_CLEAN" | base64 --decode > android/app/build/secure/worldmod-official-release.p12; then
@@ -94,22 +96,28 @@ jobs:
           echo "Permanent signing key loaded and alias verified."
 
       - name: Build signed release APK
+        if: steps.prepare_signing.outputs.configured == 'true'
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: worldmod-release
         run: gradle -p android :app:assembleRelease --no-daemon --stacktrace
 
       - name: Verify APK signature and package metadata
+        if: steps.prepare_signing.outputs.configured == 'true'
         run: |
           set -euo pipefail
           APK="android/app/build/outputs/apk/release/app-release.apk"
           test -s "$APK"
-          apksigner verify --verbose "$APK"
-          aapt dump badging "$APK" | grep -E "^package: name='com.worldmodsofficial.app' versionCode='4' versionName='1.0'"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}}"
+          BUILD_TOOLS="$(find "$SDK_ROOT/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n1)"
+          test -n "$BUILD_TOOLS"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$APK"
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | grep -E "^package: name='com.worldmodsofficial.app' versionCode='4' versionName='1.0'"
           cp "$APK" android/app/build/outputs/apk/release/WorldMod-Official.apk
           sha256sum android/app/build/outputs/apk/release/WorldMod-Official.apk
 
       - name: Upload signed validation artifact
+        if: steps.prepare_signing.outputs.configured == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: WorldMod-Official-Signed-Validation
