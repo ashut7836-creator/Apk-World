@@ -25,7 +25,7 @@
     <span><b>WORLD MODS</b><small>OFFICIAL</small></span>
   </a>
   <div class="topbar-actions">
-    <button class="icon-action" id="top-notifications" type="button" aria-label="Open notifications" data-open-tab="profile"><span>♧</span></button>
+    <button class="icon-action notification-action" id="top-notifications" type="button" aria-label="Open notifications" data-open-tab="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span id="notification-count" class="notification-count" hidden></span></button>
     <button class="icon-action admin-shortcut" type="button" aria-label="Admin login" onclick="location.href='https://world-mods-official-api.ashut7836.workers.dev/admin'"><span>⚙</span></button>
     <button id="install-app" class="install-button" type="button" hidden>Install</button>
   </div>
@@ -59,6 +59,10 @@
       <button class="quick-tile" type="button" data-open-tab="profile"><span class="quick-icon">♙</span><b>Your profile</b><small>Account and preferences</small><span class="tile-arrow">↗</span></button>
     </div>
 
+    <section class="home-latest">
+      <div class="home-latest-heading"><div><span class="eyebrow">FRESH FROM THE LIBRARY</span><h2>Latest uploads</h2></div><button class="text-action" type="button" data-open-tab="explore">See all ↗</button></div>
+      <div id="home-latest-list" class="home-latest-list"><p class="community-muted">Checking the latest uploads…</p></div>
+    </section>
     <section class="home-highlight">
       <div class="highlight-icon">✦</div>
       <div class="highlight-copy"><span class="eyebrow">THE OFFICIAL COMMUNITY</span><h2>Stay connected with us</h2><p>Get announcements and discover what’s new in World Mods Official.</p></div>
@@ -157,10 +161,10 @@
 </main>
 
 <nav class="bottom-nav" aria-label="Main navigation">
-  <button type="button" class="bottom-nav-item active" data-open-tab="home" aria-current="page"><span class="nav-symbol">⌂</span><b>Home</b></button>
-  <button type="button" class="bottom-nav-item" data-open-tab="explore"><span class="nav-symbol">⌕</span><b>Explore</b></button>
-  <button type="button" class="bottom-nav-item" data-open-tab="community"><span class="nav-symbol">☏</span><b>Community</b></button>
-  <button type="button" class="bottom-nav-item" data-open-tab="profile"><span class="nav-symbol">♙</span><b>Profile</b></button>
+  <button type="button" class="bottom-nav-item active" data-open-tab="home" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><b>Home</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="explore"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16.2 16.2 4.5 4.5M10.8 7v7.6M7 10.8h7.6"/></svg><b>Explore</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="community"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.5a2.5 2.5 0 0 1-1-2z"/></svg><b>Community</b></button>
+  <button type="button" class="bottom-nav-item" data-open-tab="profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><b>Profile</b></button>
 </nav>
 
 <footer class="app-footer"><span>WORLD MODS OFFICIAL</span><span>Built for discovery and community.</span><span>© <span id="year"></span></span></footer>
