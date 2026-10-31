@@ -353,7 +353,10 @@ async function finishUpload(request, env) {
   const now = Math.floor(Date.now() / 1000);
   const id = crypto.randomUUID();
   const published = String(body?.published_at || new Date().toISOString().slice(0, 10));
-  const description = String(body?.description || "").slice(0, 1000);\n  const thumbnailInput = String(body?.thumbnail_data_url || "");\n  if (thumbnailInput && (kind !== "app" || thumbnailInput.length > 120000 || !/^data:image\\/(?:png|webp);base64,[A-Za-z0-9+/=]+$/.test(thumbnailInput))) return response(request, { error: "The extracted app icon is invalid or too large." }, 400);\n  const thumbnailUrl = thumbnailInput || null;
+  const description = String(body?.description || "").slice(0, 1000);
+  const thumbnailInput = String(body?.thumbnail_data_url || "");
+  if (thumbnailInput && (kind !== "app" || thumbnailInput.length > 120000 || !/^data:image\/(?:png|webp);base64,[A-Za-z0-9+/=]+$/.test(thumbnailInput))) return response(request, { error: "The extracted app icon is invalid or too large." }, 400);
+  const thumbnailUrl = thumbnailInput || null;
   await env.DB.prepare(
     "INSERT INTO catalogue_items (id,kind,title,description,version,file_size,drive_file_id,drive_view_url,mime_type,thumbnail_url,published_at,is_published,created_at,updated_at,sha256,category,android_requirement) VALUES (?,?,?,?,?,?,?,?,?,?,?,1,?,?,?,?,?)"
   ).bind(id, kind, title, description, String(body?.version || "").slice(0, 40) || null, Number(file.size || body?.size || 0), fileId, file.webViewLink || null, file.mimeType || null, thumbnailUrl, published, now, now, /^[a-f0-9]{64}$/i.test(String(body?.sha256 || "")) ? String(body.sha256).toLowerCase() : null, String(body?.category || "").trim().slice(0,40) || null, String(body?.android_requirement || "").trim().slice(0,40) || null).run();
