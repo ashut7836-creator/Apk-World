@@ -18,9 +18,9 @@ function cors(request) {
   const allowed = origin === API_ORIGIN || origin === ADMIN_ORIGIN || origin === "http://localhost:8788";
   return {
     "Access-Control-Allow-Origin": allowed ? origin : API_ORIGIN,
-    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization,Content-Type,Content-Range,X-Upload-Session,X-Upload-Total",
-    "Access-Control-Expose-Headers": "Range,Retry-After",
+    "Access-Control-Allow-Methods": "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers": "Authorization,Content-Type,Content-Range,Range,If-Range,X-Upload-Session,X-Upload-Total",
+    "Access-Control-Expose-Headers": "Range,Retry-After,Content-Disposition,Content-Length,Content-Range,Accept-Ranges,Content-Type",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
@@ -759,12 +759,82 @@ export default {
         return response(request, { ok: true, service: "world-mods-official-api", stage: "migration", database: true, drive_configured: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET), catalogue_count: db?.count || 0 });
       }
       if (request.method === "GET" && url.pathname === "/api/catalogue") return await handleCatalogue(request, env);
-      if (request.method === "GET" && url.pathname.startsWith("/api/files/")) {
-        const id = url.pathname.split("/").pop();
-        const row = await env.DB.prepare("SELECT drive_file_id FROM catalogue_items WHERE drive_file_id=? AND is_published=1 LIMIT 1").bind(id).first();
+      if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/api/files/")) {
+        const id = url.pathname.slice("/api/files/".length);
+        if (!/^[A-Za-z0-9_-]{10,}$/.test(id)) return response(request, { error: "File not found." }, 404);
+        const row = await env.DB.prepare(
+          "SELECT drive_file_id,kind,title,mime_type,file_size FROM catalogue_items WHERE drive_file_id=? AND is_published=1 AND kind IN ('app','video') LIMIT 1"
+        ).bind(id).first();
         if (!row) return response(request, { error: "File not found." }, 404);
-        await env.DB.prepare("INSERT INTO catalogue_stats (drive_file_id,downloads) VALUES (?,1) ON CONFLICT(drive_file_id) DO UPDATE SET downloads=downloads+1").bind(id).run();
-        return new Response(null, { status: 302, headers: { ...cors(request), Location: "https://drive.google.com/uc?export=download&id=" + encodeURIComponent(id), "Cache-Control": "public, max-age=300" } });
+
+        const kind = row.kind === "app" ? "app" : "video";
+        const extension = kind === "app" ? ".apk" : (String(row.mime_type || "").toLowerCase().includes("webm") ? ".webm" : ".mp4");
+        const stem = String(row.title || (kind === "app" ? "app" : "video"))
+          .normalize("NFKC")
+          .replace(/\\.(?:apk|mp4|webm)$/i, "")
+          .replace(/[\\\\/:*?"<>|\\u0000-\\u001f]/g, " ")
+          .replace(/\\s+/g, " ")
+          .trim()
+          .slice(0, 100) || (kind === "app" ? "app" : "video");
+        const filename = stem + extension;
+        const asciiFilename = (stem.replace(/[^\\x20-\\x7e]/g, "_").replace(/["\\\\]/g, "_") || "download") + extension;
+        const encodedFilename = encodeURIComponent(filename).replace(/['()*]/g, char => "%" + char.charCodeAt(0).toString(16).toUpperCase());
+        const contentType = kind === "app"
+          ? "application/vnd.android.package-archive"
+          : (String(row.mime_type || "").toLowerCase().startsWith("video/") ? row.mime_type : (extension === ".webm" ? "video/webm" : "video/mp4"));
+
+        const downloadHeaders = {
+          ...cors(request),
+          "Content-Type": contentType,
+          "Content-Disposition": 'attachment; filename="' + asciiFilename + '"; filename*=UTF-8\'\'' + encodedFilename,
+          "Cache-Control": "private, no-store",
+          "X-Content-Type-Options": "nosniff",
+          "Accept-Ranges": "bytes"
+        };
+
+        if (request.method === "HEAD") {
+          const size = Number(row.file_size || 0);
+          if (Number.isSafeInteger(size) && size > 0) downloadHeaders["Content-Length"] = String(size);
+          return new Response(null, { status: 200, headers: downloadHeaders });
+        }
+
+        const upstreamHeaders = {};
+        const range = request.headers.get("Range");
+        const ifRange = request.headers.get("If-Range");
+        if (range) upstreamHeaders.Range = range;
+        if (ifRange) upstreamHeaders["If-Range"] = ifRange;
+
+        // Fetch the file through the server's private Drive connection, then stream
+        // the response body to the browser without buffering the APK/video in memory.
+        const fileResponse = await googleApi(env, "/drive/v3/files/" + encodeURIComponent(id) + "?alt=media", {
+          method: "GET",
+          headers: upstreamHeaders
+        });
+        if (!fileResponse.ok) {
+          const rangeHeader = fileResponse.headers.get("Content-Range");
+          if (fileResponse.status === 416) {
+            if (rangeHeader) downloadHeaders["Content-Range"] = rangeHeader;
+            return new Response(null, { status: 416, headers: downloadHeaders });
+          }
+          return response(request, {
+            error: fileResponse.status === 404
+              ? "This file is no longer available."
+              : "The download service could not retrieve this file. Please try again later."
+          }, fileResponse.status === 404 ? 404 : 502);
+        }
+
+        for (const header of ["Content-Range", "Content-Length", "ETag", "Last-Modified"]) {
+          const value = fileResponse.headers.get(header);
+          if (value) downloadHeaders[header] = value;
+        }
+        await env.DB.prepare(
+          "INSERT INTO catalogue_stats (drive_file_id,downloads) VALUES (?,1) ON CONFLICT(drive_file_id) DO UPDATE SET downloads=downloads+1"
+        ).bind(id).run();
+
+        return new Response(fileResponse.body, {
+          status: fileResponse.status,
+          headers: downloadHeaders
+        });
       }
       if (request.method === "GET" && url.pathname === "/api/google/start") return await handleGoogleStart(request, env);
       if (request.method === "GET" && url.pathname === "/api/google/callback") return await handleGoogleCallback(request, env);
