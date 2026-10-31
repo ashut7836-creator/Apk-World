@@ -9,6 +9,7 @@ def releaseStore = file("$buildDir/secure/worldmod-official-release.p12")
 android {
     namespace "com.worldmodsofficial.app"
     compileSdk 35
+    buildFeatures { buildConfig true }
     defaultConfig {
         applicationId "com.worldmodsofficial.app"
         minSdk 23
