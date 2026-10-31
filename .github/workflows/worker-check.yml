@@ -23,4 +23,4 @@ jobs:
       - name: Diagnose embedded HTML strings
         run: node cloudflare/scan-string.cjs
       - name: Validate Worker JavaScript syntax
-        run: node --check cloudflare/src/index.js
+        run: node --input-type=module --check < cloudflare/src/index.js
