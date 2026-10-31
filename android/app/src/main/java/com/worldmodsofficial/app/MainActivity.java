@@ -135,7 +135,7 @@ public class MainActivity extends Activity {
                 Uri apkUri = Uri.parse(apkUrl);
                 if (!"https".equalsIgnoreCase(apkUri.getScheme())
                         || !"github.com".equalsIgnoreCase(apkUri.getHost())
-                        || !apkUri.getPath().endsWith(".apk")) {
+                        || !"/ashut7836-creator/Apk-World/releases/latest/download/WorldMod-Official.apk".equals(apkUri.getPath())) {
                     throw new IllegalStateException("The update download address is not trusted.");
                 }
             } catch (Exception exception) {
