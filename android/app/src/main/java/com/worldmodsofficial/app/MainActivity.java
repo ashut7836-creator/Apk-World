@@ -77,6 +77,8 @@ public class MainActivity extends Activity {
         Button secondary;
         long id = -1L;
         String name = "Download";
+        String mimeType = "application/octet-stream";
+        boolean isApk;
         boolean complete;
         boolean failed;
         Runnable poller;
@@ -508,6 +510,11 @@ public class MainActivity extends Activity {
             AlertDialogState state = new AlertDialogState();
             downloadState = state;
             state.name = URLUtil.guessFileName(url, contentDisposition, mimeType);
+            state.mimeType = mimeType == null || mimeType.trim().isEmpty()
+                    ? (URLUtil.guessContentTypeFromName(state.name) == null ? "application/octet-stream" : URLUtil.guessContentTypeFromName(state.name))
+                    : mimeType;
+            state.isApk = state.name.toLowerCase(Locale.ROOT).endsWith(".apk")
+                    || "application/vnd.android.package-archive".equalsIgnoreCase(state.mimeType);
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle(state.name);
             request.setDescription("Downloading from WorldMod Official");
@@ -606,7 +613,7 @@ public class MainActivity extends Activity {
                     state.progress.setProgress(1000);
                 }
                 setRegularDownloadDetails(state, "Download complete · " + formatBytes(downloaded) + " saved to Downloads");
-                setRegularDownloadButtons(state, "Install", "Close");
+                setRegularDownloadButtons(state, state.isApk ? "Install" : "Open", "Close");
                 stopRegularDownloadPolling(state);
                 return;
             }
@@ -653,12 +660,22 @@ public class MainActivity extends Activity {
             return;
         }
         try {
-            Intent install = new Intent(Intent.ACTION_VIEW);
-            install.setDataAndType(fileUri, "application/vnd.android.package-archive");
-            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(install);
+            if (state.isApk && Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                Toast.makeText(this, "Allow WorldMod Official to install APKs in Android settings, then return and tap Install.", Toast.LENGTH_LONG).show();
+                Intent settings = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(settings);
+                return;
+            }
+            String type = state.isApk ? "application/vnd.android.package-archive" : state.mimeType;
+            Intent open = new Intent(Intent.ACTION_VIEW);
+            open.setDataAndType(fileUri, type);
+            open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(open);
         } catch (Exception exception) {
-            Toast.makeText(this, "Open the APK from Downloads and allow installation if Android asks.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, state.isApk
+                    ? "Open the APK from Downloads and allow installation if Android asks."
+                    : "No app is available to open this downloaded file.", Toast.LENGTH_LONG).show();
         }
     }
 
