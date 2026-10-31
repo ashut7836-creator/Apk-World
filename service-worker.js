@@ -1,4 +1,4 @@
-const CACHE_NAME = "wmo-shell-v2";
+const CACHE_NAME = "wmo-shell-v3";
 const APP_SHELL = [
   "./", "./index.html", "./styles.css", "./pwa.css", "./app.js",
   "./pwa.js", "./manifest.json", "./favicon.svg", "./offline.html",
