@@ -771,13 +771,13 @@ export default {
         const extension = kind === "app" ? ".apk" : (String(row.mime_type || "").toLowerCase().includes("webm") ? ".webm" : ".mp4");
         const stem = String(row.title || (kind === "app" ? "app" : "video"))
           .normalize("NFKC")
-          .replace(/\\.(?:apk|mp4|webm)$/i, "")
-          .replace(/[\\\\/:*?"<>|\\u0000-\\u001f]/g, " ")
-          .replace(/\\s+/g, " ")
+          .replace(/\.(?:apk|mp4|webm)$/i, "")
+          .replace(/[\\/:*?"<>|\u0000-\u001f]/g, " ")
+          .replace(/\s+/g, " ")
           .trim()
           .slice(0, 100) || (kind === "app" ? "app" : "video");
         const filename = stem + extension;
-        const asciiFilename = (stem.replace(/[^\\x20-\\x7e]/g, "_").replace(/["\\\\]/g, "_") || "download") + extension;
+        const asciiFilename = (stem.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_") || "download") + extension;
         const encodedFilename = encodeURIComponent(filename).replace(/['()*]/g, char => "%" + char.charCodeAt(0).toString(16).toUpperCase());
         const contentType = kind === "app"
           ? "application/vnd.android.package-archive"
@@ -804,7 +804,7 @@ export default {
         if (range) upstreamHeaders.Range = range;
         if (ifRange) upstreamHeaders["If-Range"] = ifRange;
 
-        // Fetch the file through the server's private Drive connection, then stream
+        // Fetch the file through the site's private Drive connection, then stream
         // the response body to the browser without buffering the APK/video in memory.
         const fileResponse = await googleApi(env, "/drive/v3/files/" + encodeURIComponent(id) + "?alt=media", {
           method: "GET",
