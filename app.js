@@ -75,9 +75,9 @@
       top.append(make("div", "type-icon " + (isVideo ? "video" : ""), isVideo ? "▶" : (isLink ? "↗" : "▣")));
       top.append(make("span", "tag " + (isVideo ? "video" : ""), isVideo ? "VIDEO" : (isLink ? "LINK" : "APK")));
       card.append(top);
-      if (httpsUrl(item.thumbnail)) {
+      if (imageSource(item.thumbnail)) {
         const image = make("img", "card-video");
-        image.src = httpsUrl(item.thumbnail); image.alt = ""; image.loading = "lazy"; card.append(image);
+        image.src = imageSource(item.thumbnail); image.alt = ""; image.loading = "lazy"; card.append(image);
       }
       card.append(make("h3", "card-title", item.title || "Untitled"));
       card.append(make("p", "card-desc", item.description || ""));
