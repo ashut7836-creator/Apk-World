@@ -356,7 +356,7 @@ async function finishUpload(request, env) {
   const description = String(body?.description || "").slice(0, 1000);
   await env.DB.prepare(
     "INSERT INTO catalogue_items (id,kind,title,description,version,file_size,drive_file_id,drive_view_url,mime_type,published_at,is_published,created_at,updated_at,sha256,category,android_requirement) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?,?,?,?)"
-  ).bind(id, kind, title, description, String(body?.version || "").slice(0, 40) || null, Number(file.size || body?.size || 0), fileId, file.webViewLink || null, file.mimeType || null, published, now, now, /^[a-f0-9]{64}$/i.test(String(body?.sha256 || "")) ? String(body.sha256).toLowerCase() : null).run();
+  ).bind(id, kind, title, description, String(body?.version || "").slice(0, 40) || null, Number(file.size || body?.size || 0), fileId, file.webViewLink || null, file.mimeType || null, published, now, now, /^[a-f0-9]{64}$/i.test(String(body?.sha256 || "")) ? String(body.sha256).toLowerCase() : null, String(body?.category || "").trim().slice(0,40) || null, String(body?.android_requirement || "").trim().slice(0,40) || null).run();
   await communityNotify(env, "New upload: " + title, "A new " + kind + " was added to the World Mods Official library.", "/Apk-World/#library");
   return response(request, { ok: true, id, file_id: fileId, title });
 }
