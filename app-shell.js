@@ -109,7 +109,5 @@
     loadPreferences();
   });
 
-  const initial = location.hash.replace("#","").split("?")[0];
-  setTab(screens.includes(initial) ? initial : "home");
-  loadPreferences();
+  if (window.WMO_COMMUNITY_USER) document.dispatchEvent(new CustomEvent("wmo-auth-change",{detail:window.WMO_COMMUNITY_USER}));\n  const initial = location.hash.replace("#","").split("?")[0];\n  setTab(screens.includes(initial) ? initial : "home");\n  loadPreferences();
 })();
