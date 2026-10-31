@@ -510,9 +510,15 @@ public class MainActivity extends Activity {
             AlertDialogState state = new AlertDialogState();
             downloadState = state;
             state.name = URLUtil.guessFileName(url, contentDisposition, mimeType);
-            state.mimeType = mimeType == null || mimeType.trim().isEmpty()
-                    ? (URLUtil.guessContentTypeFromName(state.name) == null ? "application/octet-stream" : URLUtil.guessContentTypeFromName(state.name))
-                    : mimeType;
+            if (mimeType != null && !mimeType.trim().isEmpty()) {
+                state.mimeType = mimeType;
+            } else {
+                String lowerName = state.name.toLowerCase(Locale.ROOT);
+                if (lowerName.endsWith(".apk")) state.mimeType = "application/vnd.android.package-archive";
+                else if (lowerName.endsWith(".mp4")) state.mimeType = "video/mp4";
+                else if (lowerName.endsWith(".webm")) state.mimeType = "video/webm";
+                else state.mimeType = "application/octet-stream";
+            }
             state.isApk = state.name.toLowerCase(Locale.ROOT).endsWith(".apk")
                     || "application/vnd.android.package-archive".equalsIgnoreCase(state.mimeType);
             DownloadManager.Request request = new DownloadManager.Request(uri);
