@@ -123,8 +123,8 @@
       } else if (item.file_path && (item.type === "app" || isVideo)) {
         const url=fileUrl(item.file_path);
         if (isVideo) {
-          const button = make("a","card-action","Open video ↗");
-          button.href=url; button.target="_blank"; button.rel="noopener noreferrer"; card.append(button);
+          const button = make("a","card-action","Download video ↓");
+          button.href=url; button.rel="noopener"; card.append(button);
         } else {
           const button=make("a","card-action",isNativeAndroidApp ? "Install" : "Download APK ↓");
           button.href=url; button.rel="noopener";
@@ -189,9 +189,9 @@
       const href = item.file_path ? fileUrl(item.file_path) : httpsUrl(item.url);
       row.append(icon,info);
       if (href) {
-        const action = make("a","home-latest-open",item.type === "app" ? (isNativeAndroidApp ? "Install ↓" : "Download ↓") : "Open ↗");
+        const action = make("a","home-latest-open",item.type === "app" ? (isNativeAndroidApp ? "Install ↓" : "Download ↓") : (item.type === "video" && item.file_path ? "Download ↓" : "Open ↗"));
         action.href = href;
-        if (item.type !== "app") { action.target = "_blank"; action.rel = "noopener noreferrer"; }
+        if (item.type === "link" || (item.type === "video" && !item.file_path)) { action.target = "_blank"; action.rel = "noopener noreferrer"; }
         row.append(action);
       }
       target.append(row);
