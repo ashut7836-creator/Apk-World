@@ -1,55 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1020"><meta name="description" content="Join the World Mods Official community, chat, requests and updates.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<meta http-equiv="refresh" content="0;url=./index.html#community">
 <title>Community · World Mods Official</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.json">
-<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="pwa.css"><link rel="stylesheet" href="community.css">
+<link rel="canonical" href="https://ashut7836-creator.github.io/Apk-World/">
 </head>
-<body>
-<div class="glow glow-a"></div><div class="glow glow-b"></div>
-<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="index.html#library">Explore</a><a href="community.html" aria-current="page">Community</a><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin</a></nav></header>
-<div id="global-shoutout" class="global-shoutout-host"></div>
-<main class="community-page">
-<section class="community-hero"><div class="eyebrow"><span class="dot"></span> WORLD MODS COMMUNITY</div><h1>One place. <span>One community.</span></h1><p>Meet other members, discuss updates, request apps and follow official announcements. Keep messages respectful and never share private information.</p></section>
-<section id="community-auth" class="community-panel community-auth">
-  <div class="eyebrow">MEMBER ACCESS</div><h2>Join the discussion</h2><p>Choose a username and a private 6-digit PIN. Keep your PIN secret; it is used to protect your account.</p>
-  <div class="community-tabs"><button id="tab-login" class="active" type="button">Log in</button><button id="tab-register" type="button">Create account</button></div>
-  <form id="community-auth-form">
-    <div class="community-field"><label for="community-username">Username</label><input id="community-username" name="username" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username" required placeholder="YourUsername"></div>
-    <div class="community-field"><label for="community-pin">6-digit PIN</label><input id="community-pin" name="pin" type="password" inputmode="numeric" minlength="6" maxlength="6" pattern="[0-9]{6}" autocomplete="current-password" required placeholder="••••••"></div>
-    <button id="auth-submit" class="community-primary" type="submit">Log in</button><p id="auth-status" class="community-status" role="status"></p>
-  </form>
-  <p class="community-muted">Username-only sign-in would allow anyone to impersonate another member, so a private PIN is required. Do not use your bank, phone or other important PIN.</p>
-</section>
-<section id="member-area" class="hidden">
-  <div class="member-bar"><div class="member-id"><div id="member-avatar" class="member-avatar">M</div><div><strong id="member-name">Member</strong><small id="member-details">Member account</small></div><span id="member-role" class="role-chip">Member</span></div><div class="community-actions"><a id="community-admin-link" class="community-secondary hidden" href="https://world-mods-official-api.ashut7836.workers.dev/community-admin">Admin tools</a><button id="community-logout" class="community-secondary" type="button">Log out</button></div></div>
-  <div class="community-grid">
-    <div>
-      <section class="community-panel">
-        <div class="community-section-title"><div><div class="eyebrow">PUBLIC ROOM</div><h2>Discussion</h2></div><span id="online-note" class="community-muted">Community chat</span></div>
-        <p>Messages are public to signed-in members. Keep posts under 500 characters. Repeated spam may result in a mute or block.</p>
-        <div id="chat-feed" class="chat-feed" aria-live="polite"><div class="chat-empty">Loading messages…</div></div>
-        <form id="message-form"><div class="community-field"><label for="message-text">Write a message</label><textarea id="message-text" maxlength="500" rows="3" placeholder="Share something with the community…" required></textarea></div><div class="community-actions"><button id="send-message" class="community-primary" type="submit">Send message</button><span class="community-muted">Please wait 4 seconds between messages.</span></div><p id="message-status" class="community-status" role="status"></p></form>
-      </section>
-      <section class="community-panel">
-        <div class="eyebrow">REQUEST BOARD</div><h2>Request an app</h2><p>Tell the admin what app or resource you are looking for. Requests are reviewed before anything is added.</p>
-        <form id="request-form"><div class="community-field"><label for="request-title">App or resource name</label><input id="request-title" maxlength="120" required placeholder="App name"></div><div class="community-field"><label for="request-details">Details (optional)</label><textarea id="request-details" maxlength="500" rows="2" placeholder="Version, platform or details"></textarea></div><button class="community-primary" type="submit">Submit request</button><p id="request-status" class="community-status" role="status"></p></form>
-        <div id="my-requests"></div>
-      </section>
-      <section class="community-panel">
-        <div class="eyebrow">FEEDBACK</div><h2>Report a problem</h2><p>Report broken download links, incorrect app information or other issues. Do not include personal details.</p>
-        <form id="problem-form"><div class="community-field"><label for="problem-title">What is the problem?</label><input id="problem-title" maxlength="120" required placeholder="Short description"></div><div class="community-field"><label for="problem-details">Details</label><textarea id="problem-details" maxlength="600" rows="3" required placeholder="Tell us what needs fixing"></textarea></div><button class="community-primary" type="submit">Send report</button><p id="problem-status" class="community-status" role="status"></p></form>
-      </section>
-    </div>
-    <aside>
-      <section class="community-panel"><div class="eyebrow">OFFICIAL UPDATES</div><h2>Notifications</h2><p>Shoutouts and website updates appear here.</p><div id="notification-list"><p class="community-muted">Loading updates…</p></div></section>
-      <section class="community-panel"><div class="eyebrow">COMMUNITY GUIDELINES</div><h2>Be respectful</h2><p>Keep the room useful and welcoming.</p><ul class="community-muted"><li>No spam or repeated messages.</li><li>No personal information or passwords.</li><li>Report abusive or misleading content.</li><li>Do not share unsafe or unauthorised files.</li></ul></section>
-    </aside>
-  </div>
-</section>
-</main>
-<footer><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt=""><span>WORLD <b>MODS OFFICIAL</b></span></a><span>Community · Be kind and stay safe.</span><span>© <span id="year"></span> World Mods Official</span></footer>
-<script src="shoutout.js?v=1"></script><script src="community.js?v=2"></script>
-</body></html>
+<body style="margin:0;background:#0b1020;color:#f4f7ff;font:16px Arial,sans-serif;display:grid;min-height:100vh;place-items:center">
+<p>Opening the World Mods Official app… <a style="color:#69e5d0" href="./index.html#community">Continue</a></p>
+<script>location.replace("./index.html#community");</script>
+</body>
+</html>
