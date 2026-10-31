@@ -2,7 +2,7 @@ const CACHE_NAME = "wmo-shell-v1";
 const APP_SHELL = [
   "./", "./index.html", "./styles.css", "./pwa.css", "./app.js",
   "./pwa.js", "./manifest.json", "./favicon.svg", "./offline.html",
-  "./icons/app-icon.svg"
+  "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
