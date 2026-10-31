@@ -1,0 +1,35 @@
+{
+  "id": "/Apk-World/",
+  "name": "World Mods Official",
+  "short_name": "World Mods",
+  "description": "Discover apps, Android downloads, links and videos from World Mods Official.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    {
+      "src": "./icons/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "utilities",
+    "entertainment"
+  ],
+  "prefer_related_applications": false
+}

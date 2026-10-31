@@ -1,0 +1,1 @@
+.install-button{font:700 11px 'DM Sans';cursor:pointer;background:#69e5d018;color:var(--cyan)}.install-button[hidden]{display:none!important}@media(max-width:500px){.topbar nav{gap:7px}.install-button{padding:8px 8px;font-size:10px}}

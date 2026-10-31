@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1020"><meta name="description" content="World Mods Official — apps, Android mods, download links and videos.">
+<meta name="theme-color" content="#0b1020"><meta name="description" content="World Mods Official — apps, Android mods, download links and videos."><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>World Mods Official — Apps & Videos</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icons/app-icon.svg"><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="pwa.css">
 </head>
 <body>
 <div class="glow glow-a"></div><div class="glow glow-b"></div>
-<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="#library">Explore</a><a href="#about">About</a><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin Login</a></nav></header>
+<header class="topbar"><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><nav><a href="#library">Explore</a><a href="#about">About</a><button id="install-app" class="nav-button install-button" type="button" hidden>Install app</button><a class="nav-button" href="https://world-mods-official-api.ashut7836.workers.dev/admin">Admin Login</a></nav></header>
 <main>
 <section class="hero"><div><div class="eyebrow"><span class="dot"></span> WORLD MODS OFFICIAL</div><h1>Discover.<br>Download.<br><span>Enjoy.</span></h1><p class="hero-copy">Discover apps, Android mods, download links and videos — all in one place.</p><a class="primary-button" href="#library">Explore library <span>↓</span></a></div>
 <div class="hero-art" aria-hidden="true"><div class="ring ring-one"></div><div class="ring ring-two"></div><div class="app-card"><img class="hero-logo" src="favicon.svg" alt="World Mods Official logo"></div><div class="float-tag tag-app">▣ APPS</div><div class="float-tag tag-video">▶ VIDEOS</div><div class="float-tag tag-link">↗ LINKS</div></div></section>
@@ -43,5 +43,5 @@
 </main>
 <footer><a class="brand" href="index.html"><img class="brand-avatar" src="favicon.svg" alt="World Mods Official logo"><span>WORLD <b>MODS OFFICIAL</b></span></a><span>WORLD MODS OFFICIAL · Digital downloads and videos.</span><span>© <span id="year"></span> World Mods Official</span></footer>
 <div class="safety">Safety note: only download APKs from sources you trust. World Mods Official does not certify third-party files.</div>
-<script src="app.js?v=cloudflare-20261030"></script>
+<script src="app.js?v=cloudflare-20261030"></script><script src="pwa.js?v=1"></script>
 </body></html>
