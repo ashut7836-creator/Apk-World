@@ -11,6 +11,7 @@ for (let i = start + 1; i < src.length; i++) {
   if (ch === '"') { end = i; break; }
 }
 const literal = src.slice(start, end + 1);
+console.log("RAW NEWLINES:", (literal.match(/\\n/g)||[]).length, "actual LF:", (literal.match(/\n/g)||[]).length, "actual CR:", (literal.match(/\r/g)||[]).length, "first codes:", Array.from(literal.slice(0,50)).map(c=>c.charCodeAt(0)).join(","));
 try { new vm.Script("const test = " + literal + ";"); console.log("HTML string literal parses OK"); }
 catch (e) {
   const lines = String(e.stack || "").split(String.fromCharCode(10));
