@@ -11,6 +11,20 @@
   let sort = "newest";
   let category = "";
   let androidQuery = "";
+  const isNativeAndroidApp = /WorldModOfficialApp/i.test(navigator.userAgent || "");
+  if (isNativeAndroidApp) {
+    filter = "app";
+    document.body.classList.add("native-store-mode");
+    const exploreTitle = document.getElementById("explore-title");
+    const exploreDescription = document.querySelector("#explore-view .screen-heading p");
+    const storeTab = document.querySelector('.bottom-nav-item[data-open-tab="explore"] b');
+    const appFilter = document.querySelector('.filter[data-filter="app"]');
+    document.querySelectorAll(".filter").forEach(button => button.classList.remove("active"));
+    if (appFilter) appFilter.classList.add("active");
+    if (exploreTitle) exploreTitle.textContent = "App Store";
+    if (exploreDescription) exploreDescription.textContent = "Browse apps and download them inside World Mods Official.";
+    if (storeTab) storeTab.textContent = "Store";
+  }
   document.getElementById("year").textContent = new Date().getFullYear();
 
   const make = (tag, className, value) => {
@@ -36,7 +50,8 @@
       date: row.published_at || "", url: row.url || "",
       file_path: row.drive_file_id || "", thumbnail: row.thumbnail_url || "",
       sha256: row.sha256 || "", downloads: Number(row.download_count || 0),
-      category: row.category || "", android_requirement: row.android_requirement || ""
+      category: row.category || "", android_requirement: row.android_requirement || "",
+      package_name: row.package_name || "", version_code: row.version_code == null ? "" : String(row.version_code)
     };
   }
   function bytes(n) {
@@ -76,7 +91,7 @@
       top.append(make("span", "tag " + (isVideo ? "video" : ""), isVideo ? "VIDEO" : (isLink ? "LINK" : "APK")));
       card.append(top);
       if (imageSource(item.thumbnail)) {
-        const image = make("img", "card-video");
+        const image = make("img", isVideo ? "card-video" : (isLink ? "card-video" : "app-icon-art"));
         image.src = imageSource(item.thumbnail); image.alt = ""; image.loading = "lazy"; card.append(image);
       }
       card.append(make("h3", "card-title", item.title || "Untitled"));
@@ -92,6 +107,8 @@
       if (item.downloads) details.push(item.downloads.toLocaleString() + " downloads");
       if (item.category) details.push(item.category);
       if (item.android_requirement) details.push(item.android_requirement);
+      if (item.version_code) details.push("Build " + item.version_code);
+      if (item.package_name) details.push(item.package_name);
       meta.append(make("span", "", details.join(" · ") || (isVideo ? "VIDEO" : "ANDROID")));
       card.append(meta);
       if (item.sha256) {
@@ -109,8 +126,10 @@
           const button = make("a","card-action","Open video ↗");
           button.href=url; button.target="_blank"; button.rel="noopener noreferrer"; card.append(button);
         } else {
-          const button=make("a","card-action","Download APK ↓");
-          button.href=url; button.rel="noopener"; card.append(button);
+          const button=make("a","card-action",isNativeAndroidApp ? "Install" : "Download APK ↓");
+          button.href=url; button.rel="noopener";
+          if (isNativeAndroidApp) button.setAttribute("aria-label", "Download and install " + (item.title || "this app"));
+          card.append(button);
         }
       } else if (httpsUrl(item.url)) {
         const link = make("a", "card-action", isVideo ? "Watch video ↗" : "Open link ↗");
@@ -134,7 +153,9 @@
               const href=row.drive_file_id?fileUrl(row.drive_file_id):httpsUrl(row.url);
               if(!href)return;
               const a=make("a","", "Version "+(row.version||"unspecified")+" · "+(row.published_at||""));
-              a.href=href;a.target="_blank";a.rel="noopener noreferrer";
+              a.href=href;
+              if (isNativeAndroidApp) a.rel="noopener";
+              else { a.target="_blank"; a.rel="noopener noreferrer"; }
               const small=make("small","",row.title+" · "+bytes(Number(row.file_size||0)));
               a.append(small);historyPanel.append(a);
             });
@@ -168,7 +189,7 @@
       const href = item.file_path ? fileUrl(item.file_path) : httpsUrl(item.url);
       row.append(icon,info);
       if (href) {
-        const action = make("a","home-latest-open",item.type === "app" ? "Download ↓" : "Open ↗");
+        const action = make("a","home-latest-open",item.type === "app" ? (isNativeAndroidApp ? "Install ↓" : "Download ↓") : "Open ↗");
         action.href = href;
         if (item.type !== "app") { action.target = "_blank"; action.rel = "noopener noreferrer"; }
         row.append(action);

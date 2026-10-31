@@ -8,6 +8,9 @@ on:
       - "app.js"
       - "app-shell.js"
       - "app-shell.css"
+      - "admin-upload-helper.js"
+      - "cloudflare/src/index.js"
+      - "cloudflare/migrations/**"
       - "community.js"
       - "service-worker.js"
       - "manifest.json"
@@ -18,9 +21,13 @@ on:
       - "app.js"
       - "app-shell.js"
       - "app-shell.css"
+      - "admin-upload-helper.js"
+      - "cloudflare/src/index.js"
+      - "cloudflare/migrations/**"
       - "community.js"
       - "service-worker.js"
       - "manifest.json"
+      - ".github/workflows/app-validation.yml"
 
 permissions:
   contents: read
@@ -36,13 +43,19 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check app.js
+          node --check admin-upload-helper.js
+          node --check cloudflare/src/index.js
           node --check app-shell.js
           node --check community.js
           node --check shoutout.js
           node --check pwa.js
           node --check service-worker.js
-      - name: Validate manifest JSON
-        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+      - name: Validate manifest and database migration
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+          test -s cloudflare/migrations/0002_catalogue_apk_metadata.sql
+          grep -q "ADD COLUMN package_name" cloudflare/migrations/0002_catalogue_apk_metadata.sql
+          grep -q "ADD COLUMN version_code" cloudflare/migrations/0002_catalogue_apk_metadata.sql
       - name: Verify app shell assets
         run: |
           test -s index.html

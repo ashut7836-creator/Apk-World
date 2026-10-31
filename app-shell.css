@@ -212,3 +212,37 @@ body.app-experience{background:radial-gradient(ellipse at 88% 0%,#20234b 0,trans
 .nav-icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:800px){.home-latest-list{grid-template-columns:1fr}}
 @media(max-width:560px){.home-latest{margin-top:25px}.home-latest-heading h2{font-size:19px}.home-latest-item{padding:12px}.home-latest-icon{width:40px;height:40px}.home-latest-list{gap:9px}.text-action{padding:9px 11px}.nav-icon{width:23px;height:23px}}
+
+
+/* App-store style metadata presentation */
+.app-icon-art{
+  display:block;
+  width:76px;
+  height:76px;
+  aspect-ratio:1;
+  object-fit:contain;
+  object-position:center;
+  padding:7px;
+  margin:2px auto 15px;
+  border-radius:20px;
+  background:linear-gradient(145deg,#1c2a43,#0d1728);
+  border:1px solid var(--app-line);
+}
+#explore-view .media-card:has(.app-icon-art){
+  display:flex;
+  flex-direction:column;
+}
+#explore-view .media-card:has(.app-icon-art) .card-title{
+  text-align:center;
+}
+#explore-view .media-card:has(.app-icon-art) .card-desc{
+  text-align:center;
+}
+#explore-view .media-card:has(.app-icon-art) .card-action{
+  margin-top:auto;
+}
+#explore-view .media-card:has(.app-icon-art) .card-meta{
+  flex-wrap:wrap;
+  justify-content:center;
+  text-align:center;
+}

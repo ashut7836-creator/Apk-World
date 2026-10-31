@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
     private static final String HOME_URL = "https://ashut7836-creator.github.io/Apk-World/";
     private static final String UPDATE_URL = "https://ashut7836-creator.github.io/Apk-World/app-update.json";
     private static final String SITE_HOST = "ashut7836-creator.github.io";
+    private static final String API_HOST = "world-mods-official-api.ashut7836.workers.dev";
     private static final int NOTIFICATION_PERMISSION_REQUEST = 4102;
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -76,6 +77,8 @@ public class MainActivity extends Activity {
         Button secondary;
         long id = -1L;
         String name = "Download";
+        String mimeType = "application/octet-stream";
+        boolean isApk;
         boolean complete;
         boolean failed;
         Runnable poller;
@@ -235,6 +238,12 @@ public class MainActivity extends Activity {
         gatePrimary.setText("Try again");
         gatePrimary.setVisibility(View.VISIBLE);
         gatePrimary.setOnClickListener(view -> checkForRequiredUpdate());
+        gateSecondary.setText("Continue to app");
+        gateSecondary.setVisibility(View.VISIBLE);
+        gateSecondary.setOnClickListener(view -> {
+            pendingUpdate = null;
+            openMainApp();
+        });
     }
 
     private void showMandatoryUpdate() {
@@ -469,9 +478,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                if ("https".equalsIgnoreCase(uri.getScheme()) && SITE_HOST.equalsIgnoreCase(uri.getHost())) {
-                    return false;
-                }
+                if (shouldKeepInWebView(uri)) return false;
                 openExternal(uri);
                 return true;
             }
@@ -503,6 +510,17 @@ public class MainActivity extends Activity {
             AlertDialogState state = new AlertDialogState();
             downloadState = state;
             state.name = URLUtil.guessFileName(url, contentDisposition, mimeType);
+            if (mimeType != null && !mimeType.trim().isEmpty()) {
+                state.mimeType = mimeType;
+            } else {
+                String lowerName = state.name.toLowerCase(Locale.ROOT);
+                if (lowerName.endsWith(".apk")) state.mimeType = "application/vnd.android.package-archive";
+                else if (lowerName.endsWith(".mp4")) state.mimeType = "video/mp4";
+                else if (lowerName.endsWith(".webm")) state.mimeType = "video/webm";
+                else state.mimeType = "application/octet-stream";
+            }
+            state.isApk = state.name.toLowerCase(Locale.ROOT).endsWith(".apk")
+                    || "application/vnd.android.package-archive".equalsIgnoreCase(state.mimeType);
             DownloadManager.Request request = new DownloadManager.Request(uri);
             request.setTitle(state.name);
             request.setDescription("Downloading from WorldMod Official");
@@ -601,7 +619,7 @@ public class MainActivity extends Activity {
                     state.progress.setProgress(1000);
                 }
                 setRegularDownloadDetails(state, "Download complete · " + formatBytes(downloaded) + " saved to Downloads");
-                setRegularDownloadButtons(state, "Install", "Close");
+                setRegularDownloadButtons(state, state.isApk ? "Install" : "Open", "Close");
                 stopRegularDownloadPolling(state);
                 return;
             }
@@ -648,12 +666,22 @@ public class MainActivity extends Activity {
             return;
         }
         try {
-            Intent install = new Intent(Intent.ACTION_VIEW);
-            install.setDataAndType(fileUri, "application/vnd.android.package-archive");
-            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(install);
+            if (state.isApk && Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                Toast.makeText(this, "Allow WorldMod Official to install APKs in Android settings, then return and tap Install.", Toast.LENGTH_LONG).show();
+                Intent settings = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(settings);
+                return;
+            }
+            String type = state.isApk ? "application/vnd.android.package-archive" : state.mimeType;
+            Intent open = new Intent(Intent.ACTION_VIEW);
+            open.setDataAndType(fileUri, type);
+            open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(open);
         } catch (Exception exception) {
-            Toast.makeText(this, "Open the APK from Downloads and allow installation if Android asks.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, state.isApk
+                    ? "Open the APK from Downloads and allow installation if Android asks."
+                    : "No app is available to open this downloaded file.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -678,6 +706,25 @@ public class MainActivity extends Activity {
 
     private int dp(int value) {
         return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    private boolean shouldKeepInWebView(Uri uri) {
+        if (uri == null || !"https".equalsIgnoreCase(uri.getScheme())) return false;
+        String host = uri.getHost();
+        if (host == null) return false;
+        if (SITE_HOST.equalsIgnoreCase(host) || API_HOST.equalsIgnoreCase(host)) return true;
+
+        // Keep only the official Google Drive file-download endpoints inside WebView.
+        // This lets DownloadListener hand APK files to Android DownloadManager rather
+        // than sending the user to an external browser.
+        if ("drive.google.com".equalsIgnoreCase(host)) {
+            return "/uc".equals(uri.getPath())
+                    && "download".equalsIgnoreCase(uri.getQueryParameter("export"));
+        }
+        if ("drive.usercontent.google.com".equalsIgnoreCase(host)) {
+            return "/download".equals(uri.getPath());
+        }
+        return false;
     }
 
     private void openExternal(Uri uri) {
