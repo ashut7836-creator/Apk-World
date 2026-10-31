@@ -1,7 +1,8 @@
-const CACHE_NAME = "wmo-shell-v1";
+const CACHE_NAME = "wmo-shell-v2";
 const APP_SHELL = [
   "./", "./index.html", "./styles.css", "./pwa.css", "./app.js",
   "./pwa.js", "./manifest.json", "./favicon.svg", "./offline.html",
+  "./community.html", "./community.css", "./community.js", "./shoutout.js",
   "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 
@@ -33,11 +34,11 @@ self.addEventListener("fetch", event => {
         const response = await fetch(request);
         if (response && response.ok) {
           const cache = await caches.open(CACHE_NAME);
-          await cache.put("./index.html", response.clone());
+          await cache.put(request, response.clone());
         }
         return response;
       } catch (_) {
-        return (await caches.match("./index.html")) || (await caches.match("./offline.html"));
+        return (await caches.match(request)) || (await caches.match("./index.html")) || (await caches.match("./offline.html"));
       }
     })());
     return;
