@@ -56,7 +56,8 @@
     }catch(e){target.textContent=e.message;}
   }
   async function loadRequests(){const target=$("#my-requests");try{const d=await api("/api/community/requests");target.replaceChildren();if(!d.requests.length)return;const h=document.createElement("h3");h.textContent="Your requests";h.style.fontSize="13px";target.append(h);d.requests.forEach(r=>{const row=document.createElement("div");row.className="request-row";const t=document.createElement("strong");t.textContent=r.title;const p=document.createElement("p");p.textContent=r.details||"";const b=document.createElement("span");b.className="status-chip";b.textContent=r.status;row.append(t,p,b);target.append(row);});}catch{}}
-  document.addEventListener("wmo-notification-prefs-changed",()=>{if(me)loadNotifications();});\n  async function refresh(){await Promise.all([loadMessages(),loadNotifications(),loadRequests()]);}
+  document.addEventListener("wmo-notification-prefs-changed",()=>{if(me)loadNotifications();});
+  async function refresh(){await Promise.all([loadMessages(),loadNotifications(),loadRequests()]);}
   async function boot(){
     if(!token){showAuth();return;}
     try{const d=await api("/api/community/me");showMember(d.user);await refresh();if(poll)clearInterval(poll);poll=setInterval(()=>{if(!document.hidden)refresh();},7000);}
