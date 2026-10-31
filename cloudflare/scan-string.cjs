@@ -14,7 +14,7 @@ const literal = src.slice(start, end + 1);
 try { new vm.Script("const test = " + literal + ";"); console.log("HTML string literal parses OK"); }
 catch (e) {
   const stack = String(e.stack || "");
-  const caretLine = stack.split("\\n").find(x => /^\\s*\\^/.test(x));
+  const caretLine = stack.split("\n").find(x => /^\\s*\\^/.test(x));
   const pos = caretLine ? caretLine.indexOf("^") - 1 : -1;
   const codeLine = stack.split("\\n").find(x => x.startsWith("const test = "));
   console.log("HTML embedded literal parse error:", e.message, "approx offset", pos);
