@@ -142,6 +142,36 @@
       grid.append(card);
     });
   }
+  function renderHomeLatest(records) {
+    const target = document.getElementById("home-latest-list");
+    if (!target) return;
+    target.replaceChildren();
+    const latest = records.slice().sort((a,b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0,3);
+    if (!latest.length) {
+      const empty = make("div","home-latest-empty","No uploads yet. New additions will appear here.");
+      target.append(empty);
+      return;
+    }
+    latest.forEach(item => {
+      const row = make("article","home-latest-item");
+      const typeClass = item.type === "video" ? "video" : item.type === "link" ? "link" : "";
+      const icon = make("div","home-latest-icon " + typeClass,item.type === "video" ? "VIDEO" : item.type === "link" ? "LINK" : "APK");
+      const info = make("div","home-latest-info");
+      info.append(make("b","",item.title || "Untitled"));
+      const meta = [item.category || (item.type === "video" ? "Video" : item.type === "link" ? "Link" : "App"),item.version ? "v" + item.version : ""].filter(Boolean).join(" · ");
+      info.append(make("small","",meta));
+      const href = item.file_path ? fileUrl(item.file_path) : httpsUrl(item.url);
+      row.append(icon,info);
+      if (href) {
+        const action = make("a","home-latest-open",item.type === "app" ? "Download ↓" : "Open ↗");
+        action.href = href;
+        if (item.type !== "app") { action.target = "_blank"; action.rel = "noopener noreferrer"; }
+        row.append(action);
+      }
+      target.append(row);
+    });
+  }
+
   document.querySelectorAll(".filter").forEach(button => {
     button.addEventListener("click", () => {
       document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
@@ -168,10 +198,11 @@
       categories.forEach(value => { const option=make("option","",value); option.value=value; categorySelect.append(option); });
     }
     render();
+    renderHomeLatest(items);
   }).catch(error => {
     console.error(error);
     fetch("media.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Fallback unavailable");return r.json();})
-      .then(data=>{items=Array.isArray(data)?data.filter(x=>x&&["app","video","link"].includes(x.type)):[];render();grid.prepend(make("p","hint","Showing the saved fallback list while the new catalogue is being configured."));})
+      .then(data=>{items=Array.isArray(data)?data.filter(x=>x&&["app","video","link"].includes(x.type)):[];render();renderHomeLatest(items);grid.prepend(make("p","hint","Showing the saved fallback list while the new catalogue is being configured."));})
       .catch(()=>{
         count.textContent="Library unavailable";grid.replaceChildren();
         const empty=make("div","empty");
