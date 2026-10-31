@@ -13,11 +13,12 @@ for (let i = start + 1; i < src.length; i++) {
 const literal = src.slice(start, end + 1);
 try { new vm.Script("const test = " + literal + ";"); console.log("HTML string literal parses OK"); }
 catch (e) {
-  const stack = String(e.stack || "");
-  const caretLine = stack.split("\n").find(x => /^\\s*\\^/.test(x));
-  const pos = caretLine ? caretLine.indexOf("^") - 1 : -1;
-  const codeLine = stack.split("\\n").find(x => x.startsWith("const test = "));
-  console.log("HTML embedded literal parse error:", e.message, "approx offset", pos);
-  if (pos >= 0) console.log("Context:", JSON.stringify(("const test = " + literal + ";").slice(Math.max(0,pos-100),pos+100)));
-  else console.log("Stack:", stack);
+  const lines = String(e.stack || "").split(String.fromCharCode(10));
+  const caret = lines.find(line => line.trim().startsWith("^"));
+  const pos = caret ? caret.indexOf("^") - 1 : -1;
+  console.log("HTML string parse failure:", e.message, "offset:", pos);
+  if (pos >= 0) {
+    const candidate = "const test = " + literal + ";";
+    console.log("Context:", JSON.stringify(candidate.slice(Math.max(0,pos-90),pos+90)));
+  } else console.log(lines.slice(-6).join("\\n"));
 }
